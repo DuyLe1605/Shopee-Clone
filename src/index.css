@@ -1,0 +1,33 @@
+@import 'tailwindcss';
+@theme {
+  --fill-bg-logo: var(--primary-orange-color);
+}
+
+*,
+::before,
+::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --primary-orange-color: #ee4d2d;
+}
+html {
+  height: 100%;
+  line-height: 1.2;
+}
+
+body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 400;
+}
+input,
+textarea,
+button,
+select {
+  font-family: inherit;
+  font-size: inherit;
+}
+a {
+  text-decoration: none;
+}
