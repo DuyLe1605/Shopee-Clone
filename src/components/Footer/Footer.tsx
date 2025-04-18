@@ -1,7 +1,7 @@
 export default function Footer() {
   return (
     <footer className='py-16 bg-neutral-100'>
-      <div className='container mx-auto px-4 text-base'>
+      <div className='custom-container'>
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-4'>
           <div className='lg:col-span-1'>
             <p>© 2025 Shopee. Tất cả các quyền được bảo lưu.</p>
@@ -13,7 +13,7 @@ export default function Footer() {
             </p>
           </div>
         </div>
-        <div className='text-center mt-10'>
+        <div className='text-center text-sm mt-10'>
           <p>Công ty TNHH Shopee</p>
           <p className='mt-6'>
             Địa chỉ: Tầng 4-5-6, Tòa nhà Capital Place, số 29 đường Liễu Giai, Phường Ngọc Khánh, Quận Ba Đình, Thành
