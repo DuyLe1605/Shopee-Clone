@@ -1,32 +1,80 @@
 import { Link } from 'react-router-dom'
 import '../Auth.scss'
+import { loginSchema, LoginSchema } from '../../utils/rules'
+import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useMutation } from '@tanstack/react-query'
+import Input from '../../components/Input'
+import { loginAccount } from '../../apis/auth.api'
+import { isAxiosUnprocessableEntityError } from '../../utils/utils'
+import { ResponseApi } from '../../types/utils.type'
+
+type FormData = LoginSchema
 export default function Login() {
+  // React Hook Form
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors }
+  } = useForm<FormData>({
+    resolver: yupResolver(loginSchema)
+  })
+
+  // Tanstack Query
+  const loginMutation = useMutation({
+    // Phải return về promise
+    mutationFn: (body: FormData) => loginAccount(body)
+  })
+
+  // Handle Submit
+  const onSubmit = handleSubmit((data) => {
+    loginMutation.mutate(data, {
+      onSuccess: (data) => {
+        console.log(data)
+      },
+      onError: (error) => {
+        if (isAxiosUnprocessableEntityError<ResponseApi<FormData>>(error)) {
+          const formError = error?.response?.data.data
+
+          // Ví dụ FormData có nhiều thuộc tính, thì ta sẽ lặp qua tất cả xem cái nào lỗi thì setError
+          // Form error có thể là undefined nên phải check
+          if (formError) {
+            Object.keys(formError).forEach((key) => {
+              setError(key as keyof FormData, {
+                message: formError[key as keyof FormData],
+                type: 'Sever'
+              })
+            })
+          }
+        }
+      }
+    })
+  })
   return (
     <div className='bg-[var(--primary-orange-color)] mt-4 shopee-bg-img'>
       <div className='custom-container '>
         <div className='grid grid-cols-1 lg:grid-cols-5 py:12 lg:py-32 lg:pr-10'>
           <div className='col-span-2 lg:col-start-4'>
-            <form className='p-10 rounded bg-white shadow-sm'>
+            {/* FORM */}
+            <form className='p-10 rounded bg-white shadow-sm' onSubmit={onSubmit} noValidate>
               <div className='text-2xl '>Đăng Nhập</div>
-              <div className='mt-8'>
-                <input
-                  type='email'
-                  name='email'
-                  className='p-3 w-full outline-none border border-gray-300 focus:border-gray-500 focus:shadow-sm rounded-sm'
-                  placeholder='Email'
-                />
-                <div className='mt-1 text-red-600 text-sm min-h-[1.25rem]'></div>
-              </div>
-              <div className='mt-3'>
-                <input
-                  type='password'
-                  name='password'
-                  className='p-3 w-full outline-none border border-gray-300 focus:border-gray-500 focus:shadow-sm rounded-sm'
-                  autoComplete='on'
-                  placeholder='Password'
-                />
-                <div className='mt-1 text-red-600 text-sm min-h-[1.25rem]'></div>
-              </div>
+              <Input
+                name='email'
+                register={register}
+                type='email'
+                placeholder='Email'
+                className='mt-8'
+                errorMessage={errors?.email?.message}
+              />
+              <Input
+                name='password'
+                register={register}
+                type='password'
+                placeholder='Password'
+                className='mt-3'
+                errorMessage={errors?.password?.message}
+              />
               <div className='mt-3'>
                 <button className='w-full text-center py-4 px-2 uppercase bg-red-500 text-white text-sm hover:bg-red-600'>
                   Đăng nhập

@@ -34,6 +34,7 @@ class Http {
         // Any status codes that falls outside the range of 2xx cause this function to trigger
         // Do something with response error
         console.log(error)
+        // nếu không phải lỗi 422 thì xử lí
         if (error.status !== HttpStatusCode.UnprocessableEntity) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const data: any | undefined = error.response?.data

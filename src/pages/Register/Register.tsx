@@ -22,6 +22,7 @@ export default function Register() {
     resolver: yupResolver(schema)
   })
   const registerAccountMutation = useMutation({
+    // Phải return về promise
     mutationFn: (body: Omit<FormData, 'confirm_password'>) => registerAccount(body)
   })
 
@@ -37,16 +38,17 @@ export default function Register() {
           const formError = error?.response?.data.data
 
           // Ví dụ FormData có nhiều thuộc tính, thì ta sẽ lặp qua tất cả xem cái nào lỗi thì setError
+
+          // Form error có thể là undefined nên phải check
           if (formError) {
             Object.keys(formError).forEach((key) => {
               // vì key là string, nên phải ép về kiểu của FormData(email hoặc password)
               setError(key as keyof Omit<FormData, 'confirm_password'>, {
                 message: formError[key as keyof Omit<FormData, 'confirm_password'>],
-                type: 'sever'
+                type: 'Sever'
               })
             })
           }
-          setError('email', { message: formError?.email })
         }
       }
     })
@@ -77,6 +79,7 @@ export default function Register() {
                 className='mt-3'
                 errorMessage={errors?.password?.message}
               />
+
               <Input
                 name='confirm_password'
                 register={register}
