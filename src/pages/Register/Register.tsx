@@ -1,28 +1,57 @@
 import { Link } from 'react-router-dom'
 import '../Auth.scss'
 import { useForm } from 'react-hook-form'
-import { getRules, Schema, schema } from '../../utils/rules'
+import { Schema, schema } from '../../utils/rules'
 import Input from '../../components/Input'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useMutation } from '@tanstack/react-query'
+import { registerAccount } from '../../apis/auth.api'
+import { omit } from 'lodash'
+import { isAxiosUnprocessableEntityError } from '../../utils/utils'
+import { ResponseApi } from '../../types/utils.type'
 
+type FormData = Schema
 export default function Register() {
   // React Hook Form
   const {
     register,
     handleSubmit,
-    getValues,
+    setError,
     formState: { errors }
-  } = useForm<Schema>({
+  } = useForm<FormData>({
     resolver: yupResolver(schema)
   })
-
-  // const rules = getRules(getValues)
-  // // Dùng khi validate trong React Hook Form
+  const registerAccountMutation = useMutation({
+    mutationFn: (body: Omit<FormData, 'confirm_password'>) => registerAccount(body)
+  })
 
   // HandleSubmit sẽ có 2 tham số là hàm callback, cái đầu tiên thực hiện khi Form Valid, cái còn lại thực hiện khi Form Invalid
   const onSubmit = handleSubmit((data) => {
-    console.log(data)
+    const body = omit(data, ['confirm_password'])
+    registerAccountMutation.mutate(body, {
+      onSuccess: (data) => {
+        console.log(data)
+      },
+      onError: (error) => {
+        if (isAxiosUnprocessableEntityError<ResponseApi<Omit<FormData, 'confirm_password'>>>(error)) {
+          const formError = error?.response?.data.data
+
+          // Ví dụ FormData có nhiều thuộc tính, thì ta sẽ lặp qua tất cả xem cái nào lỗi thì setError
+          if (formError) {
+            Object.keys(formError).forEach((key) => {
+              // vì key là string, nên phải ép về kiểu của FormData(email hoặc password)
+              setError(key as keyof Omit<FormData, 'confirm_password'>, {
+                message: formError[key as keyof Omit<FormData, 'confirm_password'>],
+                type: 'sever'
+              })
+            })
+          }
+          setError('email', { message: formError?.email })
+        }
+      }
+    })
   })
+
   return (
     <div className='bg-[var(--primary-orange-color)] mt-4 shopee-bg-img'>
       <div className='custom-container'>
