@@ -7,6 +7,7 @@ interface Props {
   errorMessage?: string
   name: string
   rules?: RegisterOptions
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   register: UseFormRegister<any>
 }
 export default function Input({ type, className, placeholder, errorMessage, name, rules, register }: Props) {

@@ -1,5 +1,6 @@
 import axios, { AxiosError, HttpStatusCode } from 'axios'
 
+// Trả về error có kiểu AxiosError<T>
 export const isAxiosErrorFunc = <T>(error: unknown): error is AxiosError<T> => {
   return axios.isAxiosError(error)
 }
