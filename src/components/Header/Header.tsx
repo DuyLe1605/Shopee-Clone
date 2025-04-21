@@ -1,12 +1,43 @@
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import {
+  useFloating,
+  autoUpdate,
+  offset,
+  flip,
+  shift,
+  FloatingPortal,
+  useHover,
+  useInteractions,
+  safePolygon,
+  arrow
+} from '@floating-ui/react'
 
 export default function Header() {
+  const [isOpen, setIsOpen] = useState(false)
+  const arrowRef = useRef(null)
+  const { x, y, refs, floatingStyles, context, middlewareData } = useFloating({
+    placement: 'bottom-end',
+    open: isOpen,
+    onOpenChange: setIsOpen,
+    middleware: [offset(10), flip(), shift(), arrow({ element: arrowRef })],
+    whileElementsMounted: autoUpdate
+  })
+  const hover = useHover(context, { move: false, handleClose: safePolygon() })
+  const { getReferenceProps, getFloatingProps } = useInteractions([hover])
+  console.log('middle', middlewareData.arrow?.x, middlewareData.arrow?.y)
+  console.log('pos', x, y)
   return (
     <div className='pb-5 pt-2 bg-[linear-gradient(-180deg,#f53d2d,#f63)] text-white '>
       <div className='custom-container'>
         {/* Top */}
         <div className='flex justify-end'>
-          <div className='flex items-center py-1 hover:text-gray-300 cursor-pointer'>
+          {/* Language */}
+          <div
+            className='flex items-center py-1 hover:text-gray-300 cursor-pointer '
+            ref={refs.setReference}
+            {...getReferenceProps()}
+          >
             <svg
               xmlns='http://www.w3.org/2000/svg'
               fill='none'
@@ -33,6 +64,33 @@ export default function Header() {
               <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' />
             </svg>
           </div>
+
+          {/* Tool Tip */}
+          <FloatingPortal {...getFloatingProps()}>
+            {isOpen && (
+              <div className='Tooltip' ref={refs.setFloating} style={{ ...floatingStyles, position: 'absolute' }}>
+                {/* Arrow */}
+                <span
+                  ref={arrowRef}
+                  className='border-x-transparent border-t-transparent border-b-white absolute border-[11px] z-[1] -translate-y-5 '
+                  style={{
+                    left: middlewareData.arrow?.x,
+                    top: middlewareData.arrow?.y
+                  }}
+                />
+                {/*  */}
+                <div className='bg-white relative  shadow-emerald-900 '>
+                  <div className='flex flex-col  border border-gray-200 items-start min-w-[12.5rem] cursor-pointer'>
+                    <button className='p-2.5 hover:text-[var(--primary-orange-color)] cursor-pointer'>
+                      Tiếng Việt
+                    </button>
+                    <button className='p-2.5 hover:text-[var(--primary-orange-color)] cursor-pointer '>English</button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </FloatingPortal>
+          {/*  */}
           <div className='flex items-center py-1 hover:text-gray-300 cursor-pointer ml-6'>
             <div className='w-6 h-6 mr-2 flex-shrink-0'>
               <img
