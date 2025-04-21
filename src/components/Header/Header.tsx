@@ -1,121 +1,91 @@
-import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import {
-  useFloating,
-  autoUpdate,
-  offset,
-  flip,
-  shift,
-  FloatingPortal,
-  useHover,
-  useInteractions,
-  safePolygon,
-  arrow
-} from '@floating-ui/react'
-import { AnimatePresence, motion } from 'motion/react'
-export default function Header() {
-  const [isOpen, setIsOpen] = useState(false)
-  const arrowRef = useRef(null)
-  const { x, y, strategy, refs, floatingStyles, context, middlewareData } = useFloating({
-    placement: 'bottom-end',
-    open: isOpen,
-    onOpenChange: setIsOpen,
-    middleware: [offset(10), flip(), shift(), arrow({ element: arrowRef })],
-    whileElementsMounted: autoUpdate,
-    transform: false
-  })
-  const hover = useHover(context, { move: false, handleClose: safePolygon() })
-  const { getReferenceProps, getFloatingProps } = useInteractions([hover])
-  console.log('middle', middlewareData.arrow?.x, middlewareData.arrow?.y)
-  console.log('pos', x, y)
+import Popover from '../Popover'
 
+export default function Header() {
   return (
     <div className='pb-5 pt-2 bg-[linear-gradient(-180deg,#f53d2d,#f63)] text-white '>
       <div className='custom-container'>
         {/* Top */}
         <div className='flex justify-end'>
           {/* Language */}
-          <div
-            className='flex items-center py-1 hover:text-gray-300 cursor-pointer '
-            ref={refs.setReference}
-            {...getReferenceProps()}
-          >
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              strokeWidth={1.5}
-              stroke='currentColor'
-              className='w-5 h-5'
-            >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                d='M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418'
-              />
-            </svg>
-            <span className='mx-1'>Tiếng Việt</span>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              strokeWidth={1.5}
-              stroke='currentColor'
-              className='w-5 h-5'
-            >
-              <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' />
-            </svg>
-          </div>
-
-          {/* Tool Tip */}
-          <FloatingPortal {...getFloatingProps()}>
-            <AnimatePresence>
-              {isOpen && (
-                <motion.div
-                  className='Tooltip'
-                  ref={refs.setFloating}
-                  style={{ ...floatingStyles, position: strategy, transformOrigin: '85% 0%' }}
-                  // Animation
-                  exit={{ opacity: 0, transform: 'scale(0)' }}
-                  animate={{ opacity: 1, transform: 'scale(1)' }}
-                  initial={{ opacity: 0, transform: 'scale(0)' }}
-                  transition={{ duration: 0.2 }}
+          <Popover
+            children={
+              <>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  strokeWidth={1.5}
+                  stroke='currentColor'
+                  className='w-5 h-5'
                 >
-                  {/* Arrow */}
-                  <span
-                    ref={arrowRef}
-                    className='border-x-transparent border-t-transparent border-b-white absolute border-[11px] z-[1] -translate-y-[96%] '
-                    style={{
-                      left: middlewareData.arrow?.x,
-                      top: middlewareData.arrow?.y
-                    }}
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    d='M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418'
                   />
-                  {/*  */}
-                  <div className='bg-white relative  shadow-emerald-900 '>
-                    <div className='flex flex-col  border border-gray-200 items-start min-w-[12.5rem] cursor-pointer'>
-                      <button className='p-2.5 hover:text-[var(--primary-orange-color)] cursor-pointer'>
-                        Tiếng Việt
-                      </button>
-                      <button className='p-2.5 hover:text-[var(--primary-orange-color)] cursor-pointer '>
-                        English
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </FloatingPortal>
-          {/*  */}
-          <div className='flex items-center py-1 hover:text-gray-300 cursor-pointer ml-6'>
-            <div className='w-6 h-6 mr-2 flex-shrink-0'>
-              <img
-                src='https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/489757873_1859199471601074_7498137715707161537_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeFGFP0FS5Gn1jf19cV7XI8m17KGukepukfXsoa6R6m6R8XXHpMXyH02vC0Z6xRA8luj-uijhV1eWFUk-8rBdY7P&_nc_ohc=3OnpEHuQYr0Q7kNvwFT6S6-&_nc_oc=Adk8nYoKgZn7wKJkxbcRW96SrptBoJVZsrzxsQMwGMB9qtVmwDZBNPCnv_lXQMjugIOYZkXf0fPhJYPizsOTioZh&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=q3XR-IH174YV-uUzstQXKA&oh=00_AfGzeeHHjGZKZ7hcj1lvUDuxIX88pvU6cbCmlXK0dsxnDg&oe=680AC2CA'
-                alt='avatar'
-                className='w-full h-full object-cover rounded-full'
-              />
-            </div>
-            <div>Lê Minh Duy</div>
-          </div>
+                </svg>
+                <span className='mx-1'>Tiếng Việt</span>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  strokeWidth={1.5}
+                  stroke='currentColor'
+                  className='w-5 h-5'
+                >
+                  <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' />
+                </svg>
+              </>
+            }
+            renderPopover={
+              <div className='bg-white relative  shadow-emerald-900 '>
+                <div className='flex flex-col  border border-gray-200  min-w-[12.5rem] cursor-pointer'>
+                  <button className='p-2.5 hover:text-[var(--primary-orange-color)] cursor-pointer text-left'>
+                    Tiếng Việt
+                  </button>
+                  <button className='p-2.5 hover:text-[var(--primary-orange-color)] cursor-pointer text-left'>
+                    English
+                  </button>
+                </div>
+              </div>
+            }
+            className='flex items-center py-1 hover:text-gray-300 cursor-pointer '
+            type='language'
+          />
+
+          {/* User */}
+          <Popover
+            children={
+              <>
+                <div className='w-6 h-6 mr-2 flex-shrink-0'>
+                  <img
+                    src='https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/489757873_1859199471601074_7498137715707161537_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeFGFP0FS5Gn1jf19cV7XI8m17KGukepukfXsoa6R6m6R8XXHpMXyH02vC0Z6xRA8luj-uijhV1eWFUk-8rBdY7P&_nc_ohc=3OnpEHuQYr0Q7kNvwFT6S6-&_nc_oc=Adk8nYoKgZn7wKJkxbcRW96SrptBoJVZsrzxsQMwGMB9qtVmwDZBNPCnv_lXQMjugIOYZkXf0fPhJYPizsOTioZh&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=q3XR-IH174YV-uUzstQXKA&oh=00_AfGzeeHHjGZKZ7hcj1lvUDuxIX88pvU6cbCmlXK0dsxnDg&oe=680AC2CA'
+                    alt='avatar'
+                    className='w-full h-full object-cover rounded-full'
+                  />
+                </div>
+                <span>Lê Minh Duy</span>
+              </>
+            }
+            renderPopover={
+              <div className='bg-white relative  shadow-emerald-900 '>
+                <div className='flex flex-col  border border-gray-200 cursor-pointer'>
+                  <Link to='/' className='p-3.5 hover:text-[var(--green-color)] cursor-pointer hover:bg-gray-50'>
+                    Tài khoản của tôi
+                  </Link>
+                  <Link to='/' className='p-3.5 hover:text-[var(--green-color)] cursor-pointer hover:bg-gray-50'>
+                    Đơn mua
+                  </Link>
+                  <button className='p-3.5 hover:text-[var(--green-color)] cursor-pointer text-left hover:bg-gray-50'>
+                    Đăng xuất
+                  </button>
+                </div>
+              </div>
+            }
+            className='flex items-center py-1 hover:text-gray-300 cursor-pointer ml-6'
+            type='user'
+          />
         </div>
         {/* Search Bar */}
         <div className='grid grid-cols-12 gap-4 mt-4 items-end '>
@@ -155,23 +125,89 @@ export default function Header() {
               </button>
             </div>
           </form>
-          <div className='cols-span-1'>
-            <Link to='/'>
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 24 24'
-                strokeWidth={1.5}
-                stroke='currentColor'
-                className='w-8 h-8'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  d='M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z'
-                />
-              </svg>
-            </Link>
+          <div className='col-span-1'>
+            <Popover
+              children={
+                <div className='flex justify-end'>
+                  <Link to='/'>
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 24 24'
+                      strokeWidth={1.5}
+                      stroke='currentColor'
+                      className='w-8 h-8'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        d='M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z'
+                      />
+                    </svg>
+                  </Link>
+                </div>
+              }
+              renderPopover={
+                <div className='bg-white relative shadow-emerald-900 w-100 '>
+                  <h1 className='text-gray-400 h-[40px] inline-flex items-center pl-2.5'>Sản phẩm mới thêm</h1>
+                  {/* Items */}
+                  <div className='flex p-2.5 hover:bg-gray-100'>
+                    <img
+                      src='https://down-vn.img.susercontent.com/file/sg-11134201-22120-zjhjnl3102kv27_tn'
+                      alt='product'
+                      className='w-[42px]'
+                    />
+                    <div className='ml-2.5 grow flex justify-between'>
+                      {/* Text */}
+                      <div className='max-w-[220px] truncate'>tikia tikiakatik iakatiki tikiaka akatikiaka ka</div>
+                      {/* Price */}
+                      <div className='text-[var(--primary-orange-color)]'>₫10.000.000</div>
+                    </div>
+                  </div>
+                  <div className='flex p-2.5 hover:bg-gray-100'>
+                    <img
+                      src='https://down-vn.img.susercontent.com/file/sg-11134201-22120-zjhjnl3102kv27_tn'
+                      alt='product'
+                      className='w-[42px]'
+                    />
+                    <div className='ml-2.5 grow flex justify-between'>
+                      {/* Text */}
+                      <div className='max-w-[220px] truncate'>tikia tikiakatik iakatiki tikiaka akatikiaka ka</div>
+                      {/* Price */}
+                      <div className='text-[var(--primary-orange-color)]'>₫10.000.000</div>
+                    </div>
+                  </div>
+                  <div className='flex p-2.5 hover:bg-gray-100'>
+                    <img
+                      src='https://down-vn.img.susercontent.com/file/sg-11134201-22120-zjhjnl3102kv27_tn'
+                      alt='product'
+                      className='w-[42px]'
+                    />
+                    <div className='ml-2.5 grow flex justify-between'>
+                      {/* Text */}
+                      <div className='max-w-[220px] truncate'>tikia tikiakatik iakatiki tikiaka akatikiaka ka</div>
+                      {/* Price */}
+                      <div className='text-[var(--primary-orange-color)]'>₫10.000.000</div>
+                    </div>
+                  </div>
+                  {/* Go to cart Button group */}
+                  <div className='p-2.5 flex justify-between items-center'>
+                    <div className='text-[12px]'>
+                      <span className='cart-drawer__more-item-count'>1</span>
+                      <span>&nbsp;Thêm hàng vào giỏ</span>
+                    </div>
+                    {/* Btn */}
+                    <Link
+                      to='/'
+                      className='h-[34px] bg-[var(--primary-orange-color)] inline-flex items-center px-3.5 text-white'
+                    >
+                      Xem Giỏ Hàng
+                    </Link>
+                  </div>
+                </div>
+              }
+              type='cart'
+            />
           </div>
         </div>
       </div>

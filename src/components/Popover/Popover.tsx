@@ -1,88 +1,84 @@
-import { useState, useRef, useId, type ElementType } from 'react'
+import { useId, useRef, useState } from 'react'
 import {
   useFloating,
-  FloatingPortal,
-  arrow,
-  shift,
-  offset,
-  type Placement,
-  flip,
   autoUpdate,
+  offset,
+  flip,
+  shift,
+  FloatingPortal,
   useHover,
-  useFocus,
-  useDismiss,
-  useRole,
   useInteractions,
-  safePolygon
+  safePolygon,
+  arrow,
+  Placement
 } from '@floating-ui/react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'motion/react'
 
 interface Props {
   children: React.ReactNode
   renderPopover: React.ReactNode
   className?: string
-  as?: ElementType
-  initialOpen?: boolean
-  placement?: Placement
+  type?: 'user' | 'language' | 'cart'
 }
 
-export default function Popover({
-  children,
-  className,
-  renderPopover,
-  as: Element = 'div',
-  initialOpen,
-  placement = 'bottom-end'
-}: Props) {
-  const [open, setOpen] = useState(initialOpen || false)
-  const arrowRef = useRef<HTMLElement>(null)
-  const data = useFloating({
-    open,
-    onOpenChange: setOpen,
+const tooltipType = {
+  user: { transformOrigin: 'center top', placement: 'top' },
+  language: { transformOrigin: '85% 0%', placement: 'bottom-end' },
+  cart: { transformOrigin: '95% top', placement: 'bottom-end' }
+}
+
+// Component
+export default function Popover({ children, renderPopover, className, type = 'user' }: Props) {
+  const id = useId()
+  const [isOpen, setIsOpen] = useState(false)
+  const arrowRef = useRef(null)
+  const { strategy, refs, floatingStyles, context, middlewareData } = useFloating({
+    placement: tooltipType[type].placement as Placement,
+    open: isOpen,
+    onOpenChange: setIsOpen,
     middleware: [offset(10), flip(), shift(), arrow({ element: arrowRef })],
     whileElementsMounted: autoUpdate,
-    transform: false,
-    placement
+    transform: false
   })
-  const { refs, floatingStyles, context } = data
-  const hover = useHover(context, { handleClose: safePolygon() })
-  const focus = useFocus(context)
-  const dismiss = useDismiss(context)
-  const role = useRole(context, { role: 'tooltip' })
-  const { getReferenceProps, getFloatingProps } = useInteractions([hover, focus, dismiss, role])
-  const id = useId()
-
+  const hover = useHover(context, { move: false, handleClose: safePolygon() })
+  const { getReferenceProps, getFloatingProps } = useInteractions([hover])
   return (
-    <Element className={className} ref={refs.setReference} {...getReferenceProps()}>
+    <div className={className} ref={refs.setReference} {...getReferenceProps()}>
       {children}
-      <FloatingPortal id={id}>
+
+      {/* Tool Tip */}
+      <FloatingPortal {...getFloatingProps()} id={id}>
         <AnimatePresence>
-          {open && (
+          {isOpen && (
             <motion.div
+              className='Tooltip'
               ref={refs.setFloating}
               style={{
-                transformOrigin: `${data.middlewareData.arrow?.x}px top`,
-                ...floatingStyles
+                ...floatingStyles,
+                position: strategy,
+                transformOrigin: tooltipType[type].transformOrigin
               }}
-              {...getFloatingProps()}
-              initial={{ opacity: 0, transform: `scale(0)` }}
-              animate={{ opacity: 1, transform: `scale(1)` }}
-              exit={{ opacity: 0, transform: `scale(0)` }}
+              // Animation
+              exit={{ opacity: 0, transform: 'scale(0)' }}
+              animate={{ opacity: 1, transform: 'scale(1)' }}
+              initial={{ opacity: 0, transform: 'scale(0)' }}
               transition={{ duration: 0.2 }}
             >
+              {/* Arrow */}
               <span
                 ref={arrowRef}
-                className='absolute z-10 translate-y-[-95%] border-[11px] border-x-transparent border-t-transparent border-b-white'
+                className={`border-x-transparent border-t-transparent border-b-white absolute border-[11px] z-[1] -translate-y-[96%]  cursor-pointer ${type === 'cart' ? '-translate-x-[-130%]' : ''}`}
                 style={{
-                  left: data.middlewareData.arrow?.x,
-                  top: data.middlewareData.arrow?.y
+                  left: middlewareData.arrow?.x,
+                  top: middlewareData.arrow?.y
                 }}
               />
+
               {renderPopover}
             </motion.div>
           )}
         </AnimatePresence>
       </FloatingPortal>
-    </Element>
+    </div>
   )
 }
