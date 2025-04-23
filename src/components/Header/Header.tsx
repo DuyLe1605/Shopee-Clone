@@ -1,7 +1,21 @@
 import { Link } from 'react-router-dom'
 import Popover from '../Popover'
+import { useMutation } from '@tanstack/react-query'
+import { logoutAccount } from '../../apis/auth.api'
+import { AppContext } from '../../contexts/app.context'
+import { useContext } from 'react'
 
 export default function Header() {
+  const { isAuthenticated, setIsAuthenticated } = useContext(AppContext)
+  const logoutMutation = useMutation({
+    mutationFn: logoutAccount,
+    onSuccess: () => {
+      setIsAuthenticated(false)
+    }
+  })
+  const handleLogout = () => {
+    logoutMutation.mutate()
+  }
   return (
     <div className='pb-5 pt-2 bg-[linear-gradient(-180deg,#f53d2d,#f63)] text-white '>
       <div className='custom-container'>
@@ -55,37 +69,56 @@ export default function Header() {
           />
 
           {/* User */}
-          <Popover
-            children={
-              <>
-                <div className='w-6 h-6 mr-2 flex-shrink-0'>
-                  <img
-                    src='https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/489757873_1859199471601074_7498137715707161537_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeFGFP0FS5Gn1jf19cV7XI8m17KGukepukfXsoa6R6m6R8XXHpMXyH02vC0Z6xRA8luj-uijhV1eWFUk-8rBdY7P&_nc_ohc=3OnpEHuQYr0Q7kNvwFT6S6-&_nc_oc=Adk8nYoKgZn7wKJkxbcRW96SrptBoJVZsrzxsQMwGMB9qtVmwDZBNPCnv_lXQMjugIOYZkXf0fPhJYPizsOTioZh&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=q3XR-IH174YV-uUzstQXKA&oh=00_AfGzeeHHjGZKZ7hcj1lvUDuxIX88pvU6cbCmlXK0dsxnDg&oe=680AC2CA'
-                    alt='avatar'
-                    className='w-full h-full object-cover rounded-full'
-                  />
+          {isAuthenticated && (
+            <Popover
+              children={
+                <>
+                  <div className='w-6 h-6 mr-2 flex-shrink-0'>
+                    <img
+                      src='https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/489757873_1859199471601074_7498137715707161537_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeFGFP0FS5Gn1jf19cV7XI8m17KGukepukfXsoa6R6m6R8XXHpMXyH02vC0Z6xRA8luj-uijhV1eWFUk-8rBdY7P&_nc_ohc=3OnpEHuQYr0Q7kNvwFT6S6-&_nc_oc=Adk8nYoKgZn7wKJkxbcRW96SrptBoJVZsrzxsQMwGMB9qtVmwDZBNPCnv_lXQMjugIOYZkXf0fPhJYPizsOTioZh&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=q3XR-IH174YV-uUzstQXKA&oh=00_AfGzeeHHjGZKZ7hcj1lvUDuxIX88pvU6cbCmlXK0dsxnDg&oe=680AC2CA'
+                      alt='avatar'
+                      className='w-full h-full object-cover rounded-full'
+                    />
+                  </div>
+                  <span>Lê Minh Duy</span>
+                </>
+              }
+              renderPopover={
+                <div className='bg-white relative  shadow-emerald-900 '>
+                  <div className='flex flex-col  border border-gray-200 cursor-pointer'>
+                    <Link
+                      to='/profile'
+                      className='p-3.5 hover:text-[var(--green-color)] cursor-pointer hover:bg-gray-50'
+                    >
+                      Tài khoản của tôi
+                    </Link>
+                    <Link to='/' className='p-3.5 hover:text-[var(--green-color)] cursor-pointer hover:bg-gray-50'>
+                      Đơn mua
+                    </Link>
+                    <button
+                      className='p-3.5 hover:text-[var(--green-color)] cursor-pointer text-left hover:bg-gray-50'
+                      onClick={handleLogout}
+                    >
+                      Đăng xuất
+                    </button>
+                  </div>
                 </div>
-                <span>Lê Minh Duy</span>
-              </>
-            }
-            renderPopover={
-              <div className='bg-white relative  shadow-emerald-900 '>
-                <div className='flex flex-col  border border-gray-200 cursor-pointer'>
-                  <Link to='/' className='p-3.5 hover:text-[var(--green-color)] cursor-pointer hover:bg-gray-50'>
-                    Tài khoản của tôi
-                  </Link>
-                  <Link to='/' className='p-3.5 hover:text-[var(--green-color)] cursor-pointer hover:bg-gray-50'>
-                    Đơn mua
-                  </Link>
-                  <button className='p-3.5 hover:text-[var(--green-color)] cursor-pointer text-left hover:bg-gray-50'>
-                    Đăng xuất
-                  </button>
-                </div>
-              </div>
-            }
-            className='flex items-center py-1 hover:text-gray-300 cursor-pointer ml-6'
-            type='user'
-          />
+              }
+              className='flex items-center py-1 hover:text-gray-300 cursor-pointer ml-6'
+              type='user'
+            />
+          )}
+          {!isAuthenticated && (
+            <div className='flex items-center'>
+              <Link to='register' className='mx-3 capitalize hover:text-white/70'>
+                Đăng ký
+              </Link>
+              <div className='border-r-[1px] border-r-while/40 h-4'></div>
+              <Link to='login' className='mx-3 capitalize hover:text-white/70'>
+                Đăng Nhập
+              </Link>
+            </div>
+          )}
         </div>
         {/* Search Bar */}
         <div className='grid grid-cols-12 gap-4 mt-4 items-end '>

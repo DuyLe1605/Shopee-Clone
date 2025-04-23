@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import '../Auth.scss'
 import { useForm } from 'react-hook-form'
 import { Schema, schema } from '../../utils/rules'
@@ -8,10 +8,11 @@ import { useMutation } from '@tanstack/react-query'
 import { registerAccount } from '../../apis/auth.api'
 import { omit } from 'lodash'
 import { isAxiosUnprocessableEntityError } from '../../utils/utils'
-import { ResponseApi } from '../../types/utils.type'
+import { ErrorResponseApi } from '../../types/utils.type'
 
 type FormData = Schema
 export default function Register() {
+  const navigator = useNavigate()
   // React Hook Form
   const {
     register,
@@ -30,11 +31,12 @@ export default function Register() {
   const onSubmit = handleSubmit((data) => {
     const body = omit(data, ['confirm_password'])
     registerAccountMutation.mutate(body, {
-      onSuccess: (data) => {
-        console.log(data)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      onSuccess: (_) => {
+        navigator('/login')
       },
       onError: (error) => {
-        if (isAxiosUnprocessableEntityError<ResponseApi<Omit<FormData, 'confirm_password'>>>(error)) {
+        if (isAxiosUnprocessableEntityError<ErrorResponseApi<Omit<FormData, 'confirm_password'>>>(error)) {
           const formError = error?.response?.data.data
 
           // Ví dụ FormData có nhiều thuộc tính, thì ta sẽ lặp qua tất cả xem cái nào lỗi thì setError
@@ -90,7 +92,7 @@ export default function Register() {
               />
 
               <div className='mt-3'>
-                <button className='w-full text-center py-4 px-2 uppercase bg-red-500 text-white text-sm hover:bg-red-600'>
+                <button className='w-full text-center py-4 px-2 uppercase bg-red-500 text-white text-sm hover:bg-red-600 cursor-pointer'>
                   Đăng ký
                 </button>
               </div>

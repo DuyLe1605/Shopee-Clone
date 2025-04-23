@@ -5,30 +5,35 @@ import Register from './pages/Register'
 import RegisterLayout from './layouts/RegisterLayout'
 import MainLayout from './layouts/MainLayout'
 import Profile from './pages/Profile'
+import { useContext } from 'react'
+import { AppContext } from './contexts/app.context'
 
-const isLoggedIn = false
-
+// eslint-disable-next-line react-refresh/only-export-components
 function ProtectedRoute() {
-  return isLoggedIn ? <Outlet /> : <Navigate to='/login' />
+  const { isAuthenticated } = useContext(AppContext)
+  return isAuthenticated ? <Outlet /> : <Navigate to='/login' />
 }
+// eslint-disable-next-line react-refresh/only-export-components
 function RejectedRoute() {
-  return isLoggedIn ? <Navigate to='/' /> : <Outlet />
+  const { isAuthenticated } = useContext(AppContext)
+  return isAuthenticated ? <Navigate to='/' /> : <Outlet />
 }
 
 export default function useRouteElements() {
   const routeElements = useRoutes([
     {
+      path: '/',
+      index: true,
+      element: (
+        <MainLayout>
+          <ProductList />
+        </MainLayout>
+      )
+    },
+    {
       path: '',
       element: <ProtectedRoute />,
       children: [
-        {
-          path: '/',
-          element: (
-            <MainLayout>
-              <ProductList />
-            </MainLayout>
-          )
-        },
         {
           path: '/profile',
           element: (

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import '../Auth.scss'
 import { loginSchema, LoginSchema } from '../../utils/rules'
 import { useForm } from 'react-hook-form'
@@ -7,10 +7,14 @@ import { useMutation } from '@tanstack/react-query'
 import Input from '../../components/Input'
 import { loginAccount } from '../../apis/auth.api'
 import { isAxiosUnprocessableEntityError } from '../../utils/utils'
-import { ResponseApi } from '../../types/utils.type'
+import { ErrorResponseApi } from '../../types/utils.type'
+import { useContext } from 'react'
+import { AppContext } from '../../contexts/app.context'
 
 type FormData = LoginSchema
 export default function Login() {
+  const { setIsAuthenticated } = useContext(AppContext)
+  const navigator = useNavigate()
   // React Hook Form
   const {
     register,
@@ -31,10 +35,12 @@ export default function Login() {
   const onSubmit = handleSubmit((data) => {
     loginMutation.mutate(data, {
       onSuccess: (data) => {
+        setIsAuthenticated(true)
+        navigator('/')
         console.log(data)
       },
       onError: (error) => {
-        if (isAxiosUnprocessableEntityError<ResponseApi<FormData>>(error)) {
+        if (isAxiosUnprocessableEntityError<ErrorResponseApi<FormData>>(error)) {
           const formError = error?.response?.data.data
 
           // Ví dụ FormData có nhiều thuộc tính, thì ta sẽ lặp qua tất cả xem cái nào lỗi thì setError
@@ -76,14 +82,14 @@ export default function Login() {
                 errorMessage={errors?.password?.message}
               />
               <div className='mt-3'>
-                <button className='w-full text-center py-4 px-2 uppercase bg-red-500 text-white text-sm hover:bg-red-600'>
+                <button className='w-full text-center py-4 px-2 uppercase bg-red-500 text-white text-sm hover:bg-red-600 cursor-pointer'>
                   Đăng nhập
                 </button>
               </div>
 
               <div className='flex justify-center mt-8 text-sm'>
                 <span className='text-gray-400'>Bạn chưa có tài khoản?</span>
-                <Link to='/register' className='text-red-400 ml-2'>
+                <Link to='/register' className='text-red-400 ml-2 '>
                   Đăng ký
                 </Link>
               </div>

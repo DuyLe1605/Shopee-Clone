@@ -1,5 +1,7 @@
 import axios, { AxiosError, HttpStatusCode, type AxiosInstance } from 'axios'
 import { Bounce, toast } from 'react-toastify'
+import { clearAccessTokenFromLS, getAccessTokenFromLS, saveAccessTokenToLS } from './auth'
+import { AuthResponse } from '../types/auth.type'
 
 const notify = (message: string) =>
   toast.error(message, {
@@ -15,7 +17,9 @@ const notify = (message: string) =>
   })
 class Http {
   instance: AxiosInstance
+  private access_token: string
   constructor() {
+    this.access_token = getAccessTokenFromLS()
     this.instance = axios.create({
       baseURL: 'https://api-ecom.duthanhduoc.com/',
       timeout: 10000,
@@ -24,15 +28,33 @@ class Http {
       }
     })
 
+    // Hàm xử lí trước khi request được gửi đi
+    this.instance.interceptors.request.use((config) => {
+      // Để đối với những request cần authorization, nó sẽ gửi kèm access token
+      if (this.access_token) {
+        config.headers.authorization = this.access_token
+        return config
+      }
+      return config
+    })
+
+    // Hàm xử lí trước khi response được trả về
     this.instance.interceptors.response.use(
-      function (response) {
-        // Any status code that lie within the range of 2xx cause this function to trigger
-        // Do something with response data
+      (response) => {
+        const { url } = response.config
+
+        // Kiểm tra xem url trả về là cái gì
+        if (url === 'login') {
+          this.access_token = (response.data as AuthResponse).data.access_token
+          saveAccessTokenToLS(this.access_token)
+        } else if (url === 'logout') {
+          this.access_token = ''
+          clearAccessTokenFromLS()
+        }
+
         return response
       },
       function (error: AxiosError) {
-        // Any status codes that falls outside the range of 2xx cause this function to trigger
-        // Do something with response error
         console.log(error)
         // nếu không phải lỗi 422 thì xử lí
         if (error.status !== HttpStatusCode.UnprocessableEntity) {
