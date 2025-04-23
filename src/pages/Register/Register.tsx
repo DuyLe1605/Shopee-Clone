@@ -10,6 +10,7 @@ import { omit } from 'lodash'
 import { isAxiosUnprocessableEntityError } from '../../utils/utils'
 import { ErrorResponseApi } from '../../types/utils.type'
 import Button from '../../components/Button'
+import path from '../../constants/path'
 
 type FormData = Schema
 export default function Register() {
@@ -34,7 +35,7 @@ export default function Register() {
     registerAccountMutation.mutate(body, {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       onSuccess: (_) => {
-        navigator('/login')
+        navigator(path.login)
       },
       onError: (error) => {
         if (isAxiosUnprocessableEntityError<ErrorResponseApi<Omit<FormData, 'confirm_password'>>>(error)) {
@@ -104,7 +105,7 @@ export default function Register() {
 
               <div className='flex justify-center mt-8 text-sm'>
                 <span className='text-gray-400'>Bạn đã có tài khoản?</span>
-                <Link to='/login' className='text-red-400 ml-2'>
+                <Link to={path.login} className='text-red-400 ml-2'>
                   Đăng nhập
                 </Link>
               </div>

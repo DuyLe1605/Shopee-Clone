@@ -1,6 +1,6 @@
 import axios, { AxiosError, HttpStatusCode, type AxiosInstance } from 'axios'
 import { Bounce, toast } from 'react-toastify'
-import { clearAccessTokenFromLS, getAccessTokenFromLS, saveAccessTokenToLS } from './auth'
+import { clearLocalStorage, getAccessTokenFromLS, saveAccessTokenToLS, saveProfileToLS } from './auth'
 import { AuthResponse } from '../types/auth.type'
 
 const notify = (message: string) =>
@@ -20,6 +20,7 @@ class Http {
   private access_token: string
   constructor() {
     this.access_token = getAccessTokenFromLS()
+
     this.instance = axios.create({
       baseURL: 'https://api-ecom.duthanhduoc.com/',
       timeout: 10000,
@@ -45,11 +46,13 @@ class Http {
 
         // Kiểm tra xem url trả về là cái gì
         if (url === 'login') {
-          this.access_token = (response.data as AuthResponse).data.access_token
+          const data = response.data as AuthResponse
+          this.access_token = data.data.access_token
           saveAccessTokenToLS(this.access_token)
+          saveProfileToLS(data.data.user)
         } else if (url === 'logout') {
           this.access_token = ''
-          clearAccessTokenFromLS()
+          clearLocalStorage()
         }
 
         return response

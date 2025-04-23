@@ -4,13 +4,15 @@ import { useMutation } from '@tanstack/react-query'
 import { logoutAccount } from '../../apis/auth.api'
 import { AppContext } from '../../contexts/app.context'
 import { useContext } from 'react'
+import path from '../../constants/path'
 
 export default function Header() {
-  const { isAuthenticated, setIsAuthenticated } = useContext(AppContext)
+  const { isAuthenticated, setIsAuthenticated, profile, setProfile } = useContext(AppContext)
   const logoutMutation = useMutation({
     mutationFn: logoutAccount,
     onSuccess: () => {
       setIsAuthenticated(false)
+      setProfile(null)
     }
   })
   const handleLogout = () => {
@@ -80,14 +82,14 @@ export default function Header() {
                       className='w-full h-full object-cover rounded-full'
                     />
                   </div>
-                  <span>Lê Minh Duy</span>
+                  <span>{profile?.email}</span>
                 </>
               }
               renderPopover={
                 <div className='bg-white relative  shadow-emerald-900 '>
                   <div className='flex flex-col  border border-gray-200 cursor-pointer'>
                     <Link
-                      to='/profile'
+                      to={path.profile}
                       className='p-3.5 hover:text-[var(--green-color)] cursor-pointer hover:bg-gray-50'
                     >
                       Tài khoản của tôi
@@ -110,11 +112,11 @@ export default function Header() {
           )}
           {!isAuthenticated && (
             <div className='flex items-center'>
-              <Link to='register' className='mx-3 capitalize hover:text-white/70'>
+              <Link to={path.register} className='mx-3 capitalize hover:text-white/70'>
                 Đăng ký
               </Link>
               <div className='border-r-[1px] border-r-while/40 h-4'></div>
-              <Link to='login' className='mx-3 capitalize hover:text-white/70'>
+              <Link to={path.login} className='mx-3 capitalize hover:text-white/70'>
                 Đăng Nhập
               </Link>
             </div>
