@@ -10,6 +10,7 @@ import { isAxiosUnprocessableEntityError } from '../../utils/utils'
 import { ErrorResponseApi } from '../../types/utils.type'
 import { useContext } from 'react'
 import { AppContext } from '../../contexts/app.context'
+import Button from '../../components/Button'
 
 type FormData = LoginSchema
 export default function Login() {
@@ -57,6 +58,7 @@ export default function Login() {
       }
     })
   })
+  console.log(loginMutation.isPending)
   return (
     <div className='bg-[var(--primary-orange-color)] mt-4 shopee-bg-img'>
       <div className='custom-container '>
@@ -82,9 +84,13 @@ export default function Login() {
                 errorMessage={errors?.password?.message}
               />
               <div className='mt-3'>
-                <button className='w-full text-center py-4 px-2 uppercase bg-red-500 text-white text-sm hover:bg-red-600 cursor-pointer'>
+                <Button
+                  className='w-full py-4 px-2 uppercase bg-red-500 text-white text-sm hover:bg-red-600 cursor-pointer inline-flex  justify-center items-center '
+                  disabled={loginMutation.isPending}
+                  isPending={loginMutation.isPending}
+                >
                   Đăng nhập
-                </button>
+                </Button>
               </div>
 
               <div className='flex justify-center mt-8 text-sm'>

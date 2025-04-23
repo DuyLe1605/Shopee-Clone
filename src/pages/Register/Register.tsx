@@ -9,6 +9,7 @@ import { registerAccount } from '../../apis/auth.api'
 import { omit } from 'lodash'
 import { isAxiosUnprocessableEntityError } from '../../utils/utils'
 import { ErrorResponseApi } from '../../types/utils.type'
+import Button from '../../components/Button'
 
 type FormData = Schema
 export default function Register() {
@@ -92,9 +93,13 @@ export default function Register() {
               />
 
               <div className='mt-3'>
-                <button className='w-full text-center py-4 px-2 uppercase bg-red-500 text-white text-sm hover:bg-red-600 cursor-pointer'>
+                <Button
+                  className='w-full text-center py-4 px-2 uppercase bg-red-500 text-white text-sm hover:bg-red-600 cursor-pointer inline-flex  justify-center items-center '
+                  disabled={registerAccountMutation.isPending}
+                  isPending={registerAccountMutation.isPending}
+                >
                   Đăng ký
-                </button>
+                </Button>
               </div>
 
               <div className='flex justify-center mt-8 text-sm'>
