@@ -2,6 +2,10 @@ import { createContext, useState } from 'react'
 import { getAccessTokenFromLS, getProfileFromLS } from '../utils/auth'
 import { User } from '../types/user.type'
 
+// Context này sẽ load lại giá trị mỗi khi dc tải lại trang.
+// Lần đầu tải, nó sẽ tự động lấy dữ liệu từ local storage và set State.
+//  Các lần sau khi local storage thay đổi, ta sẽ phải tự set lại giá trị cho các state
+
 interface AppContextInterface {
   isAuthenticated: boolean
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>

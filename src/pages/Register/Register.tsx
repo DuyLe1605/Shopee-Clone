@@ -88,7 +88,7 @@ export default function Register() {
                 name='confirm_password'
                 register={register}
                 type='password'
-                placeholder='confirm_password'
+                placeholder='Confirm Password'
                 className='mt-3'
                 errorMessage={errors?.confirm_password?.message}
               />
