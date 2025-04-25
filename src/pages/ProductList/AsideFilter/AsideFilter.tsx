@@ -23,8 +23,8 @@ export default function AsideFilter() {
         </Link>
         <ul>
           <li className='py-2 pl-3'>
-            <Link to={path.home} className='relative text-[var(--primary-orange-color)] font-semibold block'>
-              <svg viewBox='0 0 4 7' className='absolute fill-[var(--primary-orange-color)] h-2 w-2 top-1 left-[-12px]'>
+            <Link to={path.home} className='relative text-orange-600 font-semibold block'>
+              <svg viewBox='0 0 4 7' className='absolute fill-orange-600 h-2 w-2 top-1 left-[-12px]'>
                 <polygon points='4 3.5 0 0 0 7' />
               </svg>
               Thời trang nam
@@ -79,7 +79,7 @@ export default function AsideFilter() {
               classNameInput='p-1 w-full outline-none border border-gray-400 focus:border-gray-500 focus:shadow-sm rounded-sm outline-none border border-gray-300 bg-white'
             />
           </div>
-          <Button className='py-2 w-full flex items-center justify-center bg-[var(--primary-orange-color)] text-white rounded-b-sm cursor-pointer hover:opacity-90 text-sm'>
+          <Button className='py-2 w-full flex items-center justify-center bg-orange-600 text-white rounded-b-sm cursor-pointer hover:opacity-90 text-sm'>
             ÁP DỤNG
           </Button>
         </form>
@@ -141,7 +141,7 @@ export default function AsideFilter() {
         </ul>
       </fieldset>
 
-      <Button className='mt-5 py-2 w-full flex items-center justify-center bg-[var(--primary-orange-color)] text-white rounded-b-sm cursor-pointer hover:opacity-90 text-sm uppercase'>
+      <Button className='mt-5 py-2 w-full flex items-center justify-center bg-orange-600 text-white rounded-b-sm cursor-pointer hover:opacity-90 text-sm uppercase'>
         Xoá Tất Cả
       </Button>
     </div>

@@ -61,7 +61,7 @@ export default function Login() {
   })
 
   return (
-    <div className='bg-[var(--primary-orange-color)] mt-4 shopee-bg-img'>
+    <div className='bg-orange-600 mt-4 shopee-bg-img'>
       <div className='custom-container '>
         <div className='grid grid-cols-1 lg:grid-cols-5 py:12 lg:py-32 lg:pr-10'>
           <div className='col-span-2 lg:col-start-4'>

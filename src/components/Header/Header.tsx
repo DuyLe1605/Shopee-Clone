@@ -57,12 +57,8 @@ export default function Header() {
             renderPopover={
               <div className='bg-white relative  shadow-emerald-900 '>
                 <div className='flex flex-col  border border-gray-200  min-w-[12.5rem] cursor-pointer'>
-                  <button className='p-2.5 hover:text-[var(--primary-orange-color)] cursor-pointer text-left'>
-                    Tiếng Việt
-                  </button>
-                  <button className='p-2.5 hover:text-[var(--primary-orange-color)] cursor-pointer text-left'>
-                    English
-                  </button>
+                  <button className='p-2.5 hover:text-orange-600 cursor-pointer text-left'>Tiếng Việt</button>
+                  <button className='p-2.5 hover:text-orange-600 cursor-pointer text-left'>English</button>
                 </div>
               </div>
             }
@@ -140,7 +136,7 @@ export default function Header() {
                 placeholder='Free Ship Đơn Từ 0Đ'
               />
               <button
-                className='rounded-sm py-2 px-6 flex-shrink-0 bg-[var(--primary-orange-color)] hover:opacity-90 cursor-pointer'
+                className='rounded-sm py-2 px-6 flex-shrink-0 bg-orange-600 hover:opacity-90 cursor-pointer'
                 title='Search-btn'
               >
                 <svg
@@ -196,7 +192,7 @@ export default function Header() {
                       {/* Text */}
                       <div className='max-w-[220px] truncate'>tikia tikiakatik iakatiki tikiaka akatikiaka ka</div>
                       {/* Price */}
-                      <div className='text-[var(--primary-orange-color)]'>₫10.000.000</div>
+                      <div className='text-orange-600'>₫10.000.000</div>
                     </div>
                   </div>
                   <div className='flex p-2.5 hover:bg-gray-100'>
@@ -209,7 +205,7 @@ export default function Header() {
                       {/* Text */}
                       <div className='max-w-[220px] truncate'>tikia tikiakatik iakatiki tikiaka akatikiaka ka</div>
                       {/* Price */}
-                      <div className='text-[var(--primary-orange-color)]'>₫10.000.000</div>
+                      <div className='text-orange-600'>₫10.000.000</div>
                     </div>
                   </div>
                   <div className='flex p-2.5 hover:bg-gray-100'>
@@ -222,7 +218,7 @@ export default function Header() {
                       {/* Text */}
                       <div className='max-w-[220px] truncate'>tikia tikiakatik iakatiki tikiaka akatikiaka ka</div>
                       {/* Price */}
-                      <div className='text-[var(--primary-orange-color)]'>₫10.000.000</div>
+                      <div className='text-orange-600'>₫10.000.000</div>
                     </div>
                   </div>
                   {/* Go to cart Button group */}
@@ -232,10 +228,7 @@ export default function Header() {
                       <span>&nbsp;Thêm hàng vào giỏ</span>
                     </div>
                     {/* Btn */}
-                    <Link
-                      to='/'
-                      className='h-[34px] bg-[var(--primary-orange-color)] inline-flex items-center px-3.5 text-white'
-                    >
+                    <Link to='/' className='h-[34px] bg-orange-600 inline-flex items-center px-3.5 text-white'>
                       Xem Giỏ Hàng
                     </Link>
                   </div>
