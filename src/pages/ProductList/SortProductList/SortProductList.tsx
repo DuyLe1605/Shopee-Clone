@@ -13,7 +13,7 @@ export default function SortProductList() {
           Bán Chạy
         </button>
         <select title='price' name='price' className='h-8.5 px-2 w-50 capitalize bg-white text-black outline-none'>
-          <option value='' selected disabled hidden></option>
+          <option defaultValue={''} disabled hidden></option>
           <option value='price:asc'>Giá: Cao đến Thấp</option>
           <option value='price:desc'>Giá: Thấp đến Cao</option>
         </select>

@@ -19,7 +19,7 @@ export interface Product {
 }
 
 export interface ProductList {
-  product: Product[]
+  products: Product[]
   pagination: {
     page: number
     limit: number
@@ -27,6 +27,7 @@ export interface ProductList {
   }
 }
 
+// Những tùy chọn khi dùng params
 export interface ProductListConfig {
   page?: number
   limit?: number

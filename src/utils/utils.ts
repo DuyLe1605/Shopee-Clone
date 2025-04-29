@@ -9,3 +9,13 @@ export const isAxiosUnprocessableEntityError = <FormError>(error: unknown): erro
   // Nó sẽ check xem có phải là AXIOS ERROR hay không, nếu đúng thì sẽ check tiếp xem status có phải 422 hay không
   return isAxiosErrorFunc(error) && error.response?.status === HttpStatusCode.UnprocessableEntity
 }
+
+export const formatCurrency = (currency: number) => new Intl.NumberFormat('de-DE').format(currency)
+
+export const formatNumberToSocialStyle = (value: number) =>
+  new Intl.NumberFormat('en', {
+    notation: 'compact',
+    maximumFractionDigits: 1
+  })
+    .format(value)
+    .replace('.', ',')
