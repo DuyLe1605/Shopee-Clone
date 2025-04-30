@@ -1,13 +1,15 @@
 import classNames from 'classnames'
-import { Link } from 'react-router-dom'
+import { createSearchParams, Link } from 'react-router-dom'
+import { QueryParams } from '../../pages/ProductList/ProductList'
+import path from '../../constants/path'
 interface Props {
-  page: number
   pageSize: number
-  setPage: React.Dispatch<React.SetStateAction<number>>
+  queryConfig: QueryParams
 }
 
 const RANGE = 2
-export default function Pagination({ page, pageSize, setPage }: Props) {
+export default function Pagination({ queryConfig, pageSize }: Props) {
+  const page = Number(queryConfig.page)
   const renderPagination = () => {
     let dotAfter = false
     let dotBefore = false
@@ -60,13 +62,18 @@ export default function Pagination({ page, pageSize, setPage }: Props) {
         // Nếu hợp lệ thì return về button với index :D
         return (
           <Link
-            to={`?page=${pageNumber}`}
+            to={{
+              pathname: path.home,
+              search: createSearchParams({
+                ...queryConfig,
+                page: pageNumber.toString()
+              }).toString()
+            }}
             className={classNames(
               'px-3 py-2 rounded-sm bg-white cursor-pointer shadow shadow-neutral-200 hover:shadow-neutral-400 duration-200 transition-all border',
               { 'border-gray-500': page === pageNumber, 'border-transparent': page !== pageNumber }
             )}
             key={pageNumber}
-            onClick={() => setPage(pageNumber)}
           >
             {pageNumber}
           </Link>
@@ -76,13 +83,48 @@ export default function Pagination({ page, pageSize, setPage }: Props) {
 
   return (
     <div className='mt-8 flex items-center justify-center gap-2'>
-      <button className='px-3 py-2 rounded-sm bg-white cursor-pointer shadow shadow-neutral-200 hover:shadow-neutral-400 duration-200 transition-all'>
-        Prev
-      </button>
+      {/* ở trang đầu thì không bấm dc prev */}
+      {page === 1 ? (
+        <span className='px-3 py-2 rounded-sm bg-white cursor-not-allowed shadow shadow-neutral-200 opacity-60 '>
+          Prev
+        </span>
+      ) : (
+        <Link
+          to={{
+            pathname: path.home,
+            search: createSearchParams({
+              ...queryConfig,
+              page: (page - 1).toString()
+            }).toString()
+          }}
+          className='px-3 py-2 rounded-sm bg-white cursor-pointer shadow shadow-neutral-200 hover:shadow-neutral-400 duration-200 transition-all'
+        >
+          Prev
+        </Link>
+      )}
+
       {renderPagination()}
-      <button className='px-3 py-2 rounded-sm bg-white cursor-pointer shadow shadow-neutral-200 hover:shadow-neutral-400 duration-200 transition-all'>
-        Next
-      </button>
+
+      {/* ở trang cuối thì không bấm dc next */}
+      {page === pageSize ? (
+        <span className='px-3 py-2 rounded-sm bg-white cursor-not-allowed shadow shadow-neutral-200 opacity-60'>
+          {' '}
+          Next
+        </span>
+      ) : (
+        <Link
+          to={{
+            pathname: path.home,
+            search: createSearchParams({
+              ...queryConfig,
+              page: (page + 1).toString()
+            }).toString()
+          }}
+          className='px-3 py-2 rounded-sm bg-white cursor-pointer shadow shadow-neutral-200 hover:shadow-neutral-400 duration-200 transition-all'
+        >
+          Next
+        </Link>
+      )}
     </div>
   )
 }
