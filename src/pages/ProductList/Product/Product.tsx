@@ -6,7 +6,7 @@ interface Props {
   product: ProductType
 }
 export default function Product({ product }: Props) {
-  const discount = Math.ceil((product.price / product.price_before_discount) * 100)
+  const discount = Math.ceil(((product.price_before_discount - product.price) / product.price_before_discount) * 100)
 
   return (
     <Link to='/'>

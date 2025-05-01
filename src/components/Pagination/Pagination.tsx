@@ -9,7 +9,9 @@ interface Props {
 
 const RANGE = 2
 export default function Pagination({ queryConfig, pageSize }: Props) {
+  // Phải chuyển vì mặc định các trường trong queryConfig là string
   const page = Number(queryConfig.page)
+  // Hàm sẽ chạy mỗi lần chuyển trang
   const renderPagination = () => {
     let dotAfter = false
     let dotBefore = false
@@ -50,14 +52,14 @@ export default function Pagination({ queryConfig, pageSize }: Props) {
         // Có 3 trường hợp là curPage<= RANGE * 2 + 1, page >= pageSize - RANGE * 2 và ở giữa
         if (page <= RANGE * 2 + 1 && pageNumber > page + RANGE && pageNumber < pageSize - RANGE + 1) {
           // TH1
-          return renderDotAfter(pageNumber)
+          return renderDotAfter(index)
         } else if (page >= pageSize - RANGE * 2 && pageNumber < page - RANGE && pageNumber > RANGE) {
           // TH2
-          return renderDotBefore(pageNumber)
+          return renderDotBefore(index)
         } else {
           // TH3
-          if (pageNumber > page + RANGE && pageNumber < pageSize - RANGE + 1) return renderDotAfter(pageNumber)
-          else if (pageNumber < page - RANGE && pageNumber > RANGE) return renderDotBefore(pageNumber)
+          if (pageNumber > page + RANGE && pageNumber < pageSize - RANGE + 1) return renderDotAfter(index)
+          else if (pageNumber < page - RANGE && pageNumber > RANGE) return renderDotBefore(index)
         }
         // Nếu hợp lệ thì return về button với index :D
         return (
@@ -73,7 +75,7 @@ export default function Pagination({ queryConfig, pageSize }: Props) {
               'px-3 py-2 rounded-sm bg-white cursor-pointer shadow shadow-neutral-200 hover:shadow-neutral-400 duration-200 transition-all border',
               { 'border-gray-500': page === pageNumber, 'border-transparent': page !== pageNumber }
             )}
-            key={pageNumber}
+            key={index}
           >
             {pageNumber}
           </Link>
