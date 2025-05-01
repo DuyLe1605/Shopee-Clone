@@ -1,14 +1,39 @@
-import { Link } from 'react-router-dom'
+import { createSearchParams, Link } from 'react-router-dom'
 import path from '../../../constants/path'
 import Input from '../../../components/Input'
 import Button from '../../../components/Button'
+import { QueryParams } from '../ProductList'
+import { Category } from '../../../types/category.type'
+import classNames from 'classnames'
+import _ from 'lodash'
 
-export default function AsideFilter() {
+interface Props {
+  queryConfig: QueryParams
+  categories: Category[]
+}
+export default function AsideFilter({ queryConfig, categories }: Props) {
+  const { category } = queryConfig
+
   return (
     <div>
       {/* Tất cả danh mục */}
       <div>
-        <Link to={path.home} className='flex items-center gap-3 font-bold py-3  border-b-1 border-gray-300'>
+        <Link
+          to={{
+            pathname: path.home,
+            search: createSearchParams(
+              _.omit(
+                {
+                  ...queryConfig
+                },
+                ['category']
+              )
+            ).toString()
+          }}
+          className={classNames('flex items-center gap-3 font-bold py-3  border-b-1 border-gray-300', {
+            'text-orange-600': !category
+          })}
+        >
           <svg
             xmlns='http://www.w3.org/2000/svg'
             fill='none'
@@ -22,19 +47,30 @@ export default function AsideFilter() {
           Tất Cả Danh Mục
         </Link>
         <ul>
-          <li className='py-2 pl-3'>
-            <Link to={path.home} className='relative text-orange-600 font-semibold block'>
-              <svg viewBox='0 0 4 7' className='absolute fill-orange-600 h-2 w-2 top-1 left-[-12px]'>
-                <polygon points='4 3.5 0 0 0 7' />
-              </svg>
-              Thời trang nam
-            </Link>
-          </li>
-          <li className='py-2 pl-3'>
-            <Link to={path.home} className='relative  block'>
-              Thời trang nữ
-            </Link>
-          </li>
+          {categories.map((categoryItem) => {
+            const isActive = categoryItem._id === category
+            return (
+              <li className='py-2 pl-3' key={categoryItem._id}>
+                <Link
+                  to={{
+                    pathname: path.home,
+                    search: createSearchParams({ ...queryConfig, category: categoryItem._id }).toString()
+                  }}
+                  className={classNames('block', {
+                    'text-orange-600 font-semibold relative': isActive
+                  })}
+                >
+                  {isActive && (
+                    <svg viewBox='0 0 4 7' className='absolute fill-orange-600 h-2 w-2 top-1 left-[-12px]'>
+                      <polygon points='4 3.5 0 0 0 7' />
+                    </svg>
+                  )}
+
+                  {categoryItem.name}
+                </Link>
+              </li>
+            )
+          })}
         </ul>
       </div>
       {/* Bộ lọc tìm kiếm */}

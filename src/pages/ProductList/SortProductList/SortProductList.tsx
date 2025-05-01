@@ -76,9 +76,15 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
           Bán Chạy
         </button>
         <select
-          title='price'
+          title='Price'
           name='price'
-          className='h-8.5 px-2 w-50 capitalize bg-white text-black outline-none'
+          className={classNames(
+            'h-8.5 px-2 w-50 capitalize outline-none border text-black bg-white hover:bg-slate-100',
+            {
+              'border-orange-600': isActiveSortBy(sortBy.price),
+              'border-transparent': !isActiveSortBy(sortBy.price)
+            }
+          )}
           value={order}
           onChange={(event) => handleChangeOrder(event.target.value as Exclude<ProductListConfig['order'], undefined>)}
         >
@@ -97,10 +103,7 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
         <div className='flex items-center'>
           {/* Ở trang đầu */}
           {page === 1 ? (
-            <span
-              title='previous-page'
-              className='inline-flex items-center h-8 px-3 rounded-tl-sm rounded-bl-sm bg-slate-100 text-slate-500 cursor-not-allowed'
-            >
+            <span className='inline-flex items-center h-8 px-3 rounded-tl-sm rounded-bl-sm bg-slate-100 text-slate-500 cursor-not-allowed'>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 fill='none'
@@ -121,7 +124,6 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
                   page: (page - 1).toString()
                 }).toString()
               }}
-              title='next-page'
               className='inline-flex items-center h-8 px-3 rounded-tl-sm rounded-bl-sm bg-white cursor-pointer'
             >
               <svg
@@ -138,10 +140,7 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
           )}
           {/* Ở trang cuối */}
           {page === pageSize ? (
-            <span
-              title='previous-page'
-              className='inline-flex items-center h-8 px-3 rounded-tl-sm rounded-bl-sm bg-slate-100 text-slate-500 cursor-not-allowed'
-            >
+            <span className='inline-flex items-center h-8 px-3 rounded-tl-sm rounded-bl-sm bg-slate-100 text-slate-500 cursor-not-allowed'>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 fill='none'
@@ -162,7 +161,6 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
                   page: (page + 1).toString()
                 }).toString()
               }}
-              title='next-page'
               className='inline-flex items-center h-8 px-3 rounded-tl-sm rounded-bl-sm bg-white cursor-pointer'
             >
               <svg

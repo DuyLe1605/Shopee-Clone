@@ -10,6 +10,7 @@ import { Product as ProductType, ProductListConfig } from '../../types/product.t
 import shouldRenderDefaultProduct from '../../utils/shouldRenderDefaultProduct'
 import Product from './Product/Product'
 import Pagination from '../../components/Pagination'
+import categoryApi from '../../apis/category.api'
 
 export type QueryParams = {
   [key in keyof ProductListConfig]: string
@@ -33,34 +34,38 @@ export default function ProductList() {
     },
     _.isUndefined
   )
-
-  const { data } = useQuery({
+  // Get api Product
+  const { data: productData } = useQuery({
     queryKey: ['ProductList', queryConfig],
     queryFn: () => productApi.getProducts(queryConfig as ProductListConfig),
     placeholderData: keepPreviousData
   })
-
+  // Get api Categories, trả về 1 mảng danh sách các Category
+  const { data: categoriesData } = useQuery({
+    queryKey: ['Categories'],
+    queryFn: () => categoryApi.getCategories()
+  })
   return (
     <div className='bg-gray-200 py-7'>
       <div className='custom-container'>
-        {data && (
+        {productData && (
           <div className='grid grid-cols-12 gap-6'>
             {/* Aside Filter */}
             <div className='col-span-2 '>
-              <AsideFilter />
+              <AsideFilter queryConfig={queryConfig} categories={categoriesData?.data.data || []} />
             </div>
             {/*  */}
             <div className='col-span-10'>
-              <SortProductList queryConfig={queryConfig} pageSize={data.data.data.pagination.page_size} />
+              <SortProductList queryConfig={queryConfig} pageSize={productData.data.data.pagination.page_size} />
               <div className='mt-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3'>
-                {data.data.data.products.map((product: ProductType) => (
+                {productData.data.data.products.map((product: ProductType) => (
                   <div className='col-span-1' key={product._id}>
                     {shouldRenderDefaultProduct(queryParams) && <DefaultProduct product={product} />}
                     {!shouldRenderDefaultProduct(queryParams) && <Product product={product} />}
                   </div>
                 ))}
               </div>
-              <Pagination queryConfig={queryConfig} pageSize={data.data.data.pagination.page_size} />
+              <Pagination queryConfig={queryConfig} pageSize={productData.data.data.pagination.page_size} />
             </div>
           </div>
         )}
