@@ -73,7 +73,7 @@ export default function Header() {
                 <>
                   <div className='w-6 h-6 mr-2 flex-shrink-0'>
                     <img
-                      src='https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/489757873_1859199471601074_7498137715707161537_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeFGFP0FS5Gn1jf19cV7XI8m17KGukepukfXsoa6R6m6R8XXHpMXyH02vC0Z6xRA8luj-uijhV1eWFUk-8rBdY7P&_nc_ohc=3OnpEHuQYr0Q7kNvwFT6S6-&_nc_oc=Adk8nYoKgZn7wKJkxbcRW96SrptBoJVZsrzxsQMwGMB9qtVmwDZBNPCnv_lXQMjugIOYZkXf0fPhJYPizsOTioZh&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=q3XR-IH174YV-uUzstQXKA&oh=00_AfGzeeHHjGZKZ7hcj1lvUDuxIX88pvU6cbCmlXK0dsxnDg&oe=680AC2CA'
+                      src='https://plus.unsplash.com/premium_photo-1673388695233-1e66ff1f17dc?q=80&w=1972&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
                       alt='avatar'
                       className='w-full h-full object-cover rounded-full'
                     />

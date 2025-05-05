@@ -18,7 +18,7 @@ export type QueryParams = {
 
 export default function ProductList() {
   const queryParams: QueryParams = useQueryParams()
-  // Làm như vậy để lọc ra những param thuộc ProductListConfig
+  // Làm như vậy để lọc ra những param thuộc ProductListConfig, loại bỏ những trường undefined
   const queryConfig: QueryParams = _.omitBy(
     {
       page: queryParams.page || '1',

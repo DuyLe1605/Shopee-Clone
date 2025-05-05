@@ -32,12 +32,21 @@
 // })
 
 import * as yup from 'yup'
+
+function testPriceMinMax(this: yup.TestContext<yup.AnyObject>) {
+  const { price_min, price_max } = this.parent // this.parent là obj chứa price_min và price_max
+  // Nếu người dùng nhập cả 2 thì kiểm tra xem price max có lớn hơn hay không
+  if (price_max !== '' && price_min !== '') return Number(price_max) >= Number(price_min)
+  // Nếu người dùng không nhập gì thì sẽ là false
+  return price_max !== '' || price_min !== ''
+}
+
 // Yup
 export const schema = yup
   .object({
     email: yup
       .string()
-      .required('Vui lòng nhập Email'!)
+      .required('Vui lòng nhập Email !')
       .email('Email sai định dạng !')
       .min(6, 'Độ dài email nằm trong khoảng 5-160 kí tự')
       .max(160, 'Độ dài email nằm trong khoảng 5-160 kí tự'),
@@ -51,14 +60,26 @@ export const schema = yup
     confirm_password: yup
       .string()
       .required('Vui lòng nhập lại Password')
-      .oneOf([yup.ref('password')], 'Mật khẩu không khớp, vui lòng nhập lại !')
+      .oneOf([yup.ref('password')], 'Mật khẩu không khớp, vui lòng nhập lại !'),
+    price_min: yup.string().default('').test({
+      name: 'price-not-allowed',
+      message: 'Giá không phù hợp',
+      test: testPriceMinMax
+    }),
+    price_max: yup.string().default('').test({
+      name: 'price-not-allowed',
+      message: 'Giá không phù hợp',
+      test: testPriceMinMax
+    })
   })
   .required()
 
 // Ta khai báo 1 Schema tổng, nhưng có trường hợp trong form không dùng hết tất cả các trường, ta có thể dùng omit hoặc pick đẻ lấy:
 
-export const loginSchema = schema.omit(['confirm_password']) // Loại bỏ trường confirm password
+export const loginSchema = schema.pick(['email', 'password']) // Loại bỏ trường confirm password
+export const priceSchema = schema.pick(['price_min', 'price_max'])
 
 // Dùng để lấy kiểu của schema, không phải tự khai báo thủ công nữa
 export type Schema = yup.InferType<typeof schema>
 export type LoginSchema = yup.InferType<typeof loginSchema>
+export type PriceSchema = yup.InferType<typeof priceSchema>

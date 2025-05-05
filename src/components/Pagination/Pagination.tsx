@@ -21,7 +21,7 @@ export default function Pagination({ queryConfig, pageSize }: Props) {
         return (
           <button
             key={index}
-            className='px-3 py-2 rounded-sm bg-white cursor-pointer shadow shadow-neutral-200 hover:shadow-neutral-400 duration-200 transition-all'
+            className='px-3 py-2 rounded-sm bg-white shadow shadow-neutral-200 hover:shadow-neutral-400 duration-200 transition-all'
           >
             ...
           </button>
@@ -35,7 +35,7 @@ export default function Pagination({ queryConfig, pageSize }: Props) {
         return (
           <button
             key={index}
-            className='px-3 py-2 rounded-sm bg-white cursor-pointer shadow shadow-neutral-200 hover:shadow-neutral-400 duration-200 transition-all'
+            className='px-3 py-2 rounded-sm bg-white  shadow shadow-neutral-200 hover:shadow-neutral-400 duration-200 transition-all'
           >
             ...
           </button>

@@ -1,19 +1,54 @@
-import { createSearchParams, Link } from 'react-router-dom'
+import { createSearchParams, Link, useNavigate } from 'react-router-dom'
 import path from '../../../constants/path'
-import Input from '../../../components/Input'
 import Button from '../../../components/Button'
 import { QueryParams } from '../ProductList'
 import { Category } from '../../../types/category.type'
 import classNames from 'classnames'
 import _ from 'lodash'
+import InputNumber from '../../../components/InputNumber'
+import { useForm, Controller } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { PriceSchema, priceSchema } from '../../../utils/rules'
 
 interface Props {
   queryConfig: QueryParams
   categories: Category[]
 }
-export default function AsideFilter({ queryConfig, categories }: Props) {
-  const { category } = queryConfig
 
+type FormData = PriceSchema
+export default function AsideFilter({ queryConfig, categories }: Props) {
+  const navigate = useNavigate()
+  const { category } = queryConfig
+  const {
+    control,
+    handleSubmit,
+    trigger,
+    formState: { errors }
+  } = useForm<FormData>({
+    defaultValues: {
+      price_min: '',
+      price_max: ''
+    },
+    resolver: yupResolver(priceSchema),
+    shouldFocusError: false
+  })
+
+  const onSubmit = handleSubmit((data) => {
+    console.log(data)
+    navigate({
+      pathname: path.home,
+      search: createSearchParams(
+        _.omitBy(
+          {
+            ...queryConfig,
+            price_max: data.price_max,
+            price_min: data.price_min
+          },
+          (value) => value === '' // Để nếu người dùng không nhập cái nào, thì sẽ không hiển thị cái đó lên params
+        )
+      ).toString()
+    })
+  })
   return (
     <div>
       {/* Tất cả danh mục */}
@@ -24,7 +59,8 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
             search: createSearchParams(
               _.omit(
                 {
-                  ...queryConfig
+                  ...queryConfig,
+                  page: '1'
                 },
                 ['category']
               )
@@ -54,7 +90,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
                 <Link
                   to={{
                     pathname: path.home,
-                    search: createSearchParams({ ...queryConfig, category: categoryItem._id }).toString()
+                    search: createSearchParams({ ...queryConfig, category: categoryItem._id, page: '1' }).toString()
                   }}
                   className={classNames('block', {
                     'text-orange-600 font-semibold relative': isActive
@@ -99,22 +135,49 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
       {/* Khoảng giá */}
       <fieldset className='mt-5 pb-5 border-b-1 border-gray-300'>
         <legend>Khoảng giá</legend>
-        <form className='mt-5  '>
+        <form className='mt-5' onSubmit={onSubmit}>
           <div className='flex items-center gap-2.5 '>
-            <Input
-              className=''
-              type='text'
-              placeholder='₫ TỪ'
-              classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 focus:shadow-sm rounded-sm outline-none border border-gray-400 bg-white'
+            <Controller
+              control={control}
+              name='price_min'
+              render={({ field }) => (
+                <InputNumber
+                  className=''
+                  type='text'
+                  placeholder='₫ TỪ'
+                  classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 focus:shadow-sm rounded-sm outline-none border border-gray-400 bg-white'
+                  classNameError='hidden'
+                  onChange={(event) => {
+                    field.onChange(event)
+                    trigger('price_max')
+                  }}
+                  value={field.value}
+                  ref={field.ref} // Từ 19 trở đi, chúng ta nên truyền ref như 1 props, không nên dùng forwardRef nữa
+                />
+              )}
             />
             <div className='w-2.5 h-[1px] bg-gray-400 shrink-0 mb-5'></div>
-            <Input
-              className=''
-              type='text'
-              placeholder='₫ ĐẾN'
-              classNameInput='p-1 w-full outline-none border border-gray-400 focus:border-gray-500 focus:shadow-sm rounded-sm outline-none border border-gray-300 bg-white'
+            <Controller
+              control={control}
+              name='price_max'
+              render={({ field }) => (
+                <InputNumber
+                  className=''
+                  type='text'
+                  placeholder='₫ ĐẾN'
+                  classNameInput='p-1 w-full outline-none border border-gray-400 focus:border-gray-500 focus:shadow-sm rounded-sm outline-none border border-gray-300 bg-white'
+                  classNameError='hidden'
+                  onChange={(event) => {
+                    field.onChange(event)
+                    trigger('price_min')
+                  }}
+                  value={field.value}
+                  ref={field.ref} // Từ 19 trở đi, chúng ta nên truyền ref như 1 props, không nên dùng forwardRef nữa
+                />
+              )}
             />
           </div>
+          <div className='mt-1 text-red-600 text-sm min-h-[1.25rem] text-center mb-1'>{errors.price_min?.message}</div>
           <Button className='py-2 w-full flex items-center justify-center bg-orange-600 text-white rounded-b-sm cursor-pointer hover:opacity-90 text-sm'>
             ÁP DỤNG
           </Button>
