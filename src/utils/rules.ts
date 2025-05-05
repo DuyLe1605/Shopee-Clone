@@ -79,6 +79,14 @@ export const schema = yup
 export const loginSchema = schema.pick(['email', 'password']) // Loại bỏ trường confirm password
 export const priceSchema = schema.pick(['price_min', 'price_max'])
 
+/*
+Lưu ý rằng những schema mà không có required hoặc default value, thì ta phải bổ sung,hoặc ép kiểu luôn :
+export const priceSchema = schema.pick(['price_min', 'price_max']) as yup.ObjectSchema<{
+    price_max: string;
+    price_min: string;
+}
+*/
+
 // Dùng để lấy kiểu của schema, không phải tự khai báo thủ công nữa
 export type Schema = yup.InferType<typeof schema>
 export type LoginSchema = yup.InferType<typeof loginSchema>
