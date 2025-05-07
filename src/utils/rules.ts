@@ -70,7 +70,8 @@ export const schema = yup
       name: 'price-not-allowed',
       message: 'Giá không phù hợp',
       test: testPriceMinMax
-    })
+    }),
+    name: yup.string().trim().required('')
   })
   .required()
 
@@ -78,7 +79,7 @@ export const schema = yup
 
 export const loginSchema = schema.pick(['email', 'password']) // Loại bỏ trường confirm password
 export const priceSchema = schema.pick(['price_min', 'price_max'])
-
+export const searchSchema = schema.pick(['name'])
 /*
 Lưu ý rằng những schema mà không có required hoặc default value, thì ta phải bổ sung,hoặc ép kiểu luôn :
 export const priceSchema = schema.pick(['price_min', 'price_max']) as yup.ObjectSchema<{
@@ -91,3 +92,4 @@ export const priceSchema = schema.pick(['price_min', 'price_max']) as yup.Object
 export type Schema = yup.InferType<typeof schema>
 export type LoginSchema = yup.InferType<typeof loginSchema>
 export type PriceSchema = yup.InferType<typeof priceSchema>
+export type SearchSchema = yup.InferType<typeof searchSchema>

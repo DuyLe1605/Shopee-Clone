@@ -1,10 +1,11 @@
 import classNames from 'classnames'
 import { sortBy, order as orderConstant } from '../../../../constants/product'
 import { ProductListConfig } from '../../../../types/product.type'
-import { QueryParams } from '../../ProductList'
+
 import { createSearchParams, Link, useNavigate } from 'react-router-dom'
 import path from '../../../../constants/path'
 import _ from 'lodash'
+import { QueryParams } from 'src/hooks/useQueryConfig'
 
 interface Props {
   pageSize: number

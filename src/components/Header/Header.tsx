@@ -1,12 +1,23 @@
-import { Link } from 'react-router-dom'
+import { createSearchParams, Link, useNavigate } from 'react-router-dom'
 import Popover from '../Popover'
 import { useMutation } from '@tanstack/react-query'
 import authApi from '../../apis/auth.api'
 import { AppContext } from '../../contexts/app.context'
 import { useContext } from 'react'
 import path from '../../constants/path'
+import { searchSchema, SearchSchema } from '~/utils/rules'
+import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import useQueryConfig from '~/hooks/useQueryConfig'
+import _ from 'lodash'
 
 export default function Header() {
+  const navigate = useNavigate()
+  const queryConfig = useQueryConfig()
+  const { register, handleSubmit } = useForm<SearchSchema>({
+    defaultValues: { name: '' },
+    resolver: yupResolver(searchSchema)
+  })
   const { isAuthenticated, setIsAuthenticated, profile, setProfile } = useContext(AppContext)
   const logoutMutation = useMutation({
     mutationFn: authApi.logout,
@@ -15,9 +26,20 @@ export default function Header() {
       setProfile(null)
     }
   })
+
   const handleLogout = () => {
     logoutMutation.mutate()
   }
+  const onSubmit = handleSubmit((data) => {
+    const config = queryConfig.order
+      ? _.omit({ ...queryConfig, name: data.name }, ['order', 'sort_by'])
+      : { ...queryConfig, name: data.name }
+
+    navigate({
+      pathname: path.home,
+      search: createSearchParams(_.omit(config, ['price_min', 'price_max', 'rating_filter', 'category'])).toString()
+    })
+  })
   return (
     <div className='pb-5 pt-2 bg-[linear-gradient(-180deg,#f53d2d,#f63)] text-white '>
       <div className='custom-container'>
@@ -127,13 +149,13 @@ export default function Header() {
               </g>
             </svg>
           </Link>
-          <form className='col-span-9'>
+          <form className='col-span-9' onSubmit={onSubmit}>
             <div className='bg-white rounded-sm p-1 flex'>
               <input
                 type='text'
-                name='search'
                 className='text-black px-3 py-2 flex-grow border-none outline-none bg-transparent'
                 placeholder='Free Ship Đơn Từ 0Đ'
+                {...register('name')}
               />
               <button
                 className='rounded-sm py-2 px-6 flex-shrink-0 bg-orange-600 hover:opacity-90 cursor-pointer'

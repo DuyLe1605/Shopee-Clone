@@ -1,7 +1,7 @@
 import { createSearchParams, Link, useNavigate } from 'react-router-dom'
 import path from '../../../../constants/path'
 import Button from '../../../../components/Button'
-import { QueryParams } from '../../ProductList'
+
 import { Category } from '../../../../types/category.type'
 import classNames from 'classnames'
 import _ from 'lodash'
@@ -10,6 +10,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { PriceSchema, priceSchema } from '../../../../utils/rules'
 import RatingStars from '../RatingStars'
+import { QueryParams } from '../../../../hooks/useQueryConfig'
 
 interface Props {
   queryConfig: QueryParams

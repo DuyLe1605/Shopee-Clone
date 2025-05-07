@@ -1,7 +1,8 @@
 import classNames from 'classnames'
 import { createSearchParams, Link } from 'react-router-dom'
-import { QueryParams } from '../../pages/ProductList/ProductList'
+
 import path from '../../constants/path'
+import { QueryParams } from '../../hooks/useQueryConfig'
 interface Props {
   pageSize: number
   queryConfig: QueryParams

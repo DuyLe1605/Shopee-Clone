@@ -1,6 +1,4 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
-import useQueryParams from '../../hooks/useQueryParams'
-import _ from 'lodash'
 
 import AsideFilter from './components/AsideFilter'
 import DefaultProduct from './components/DefaultProduct'
@@ -12,29 +10,11 @@ import productApi from '../../apis/product.api'
 import { Product as ProductType, ProductListConfig } from '../../types/product.type'
 import shouldRenderDefaultProduct from '../../utils/shouldRenderDefaultProduct'
 import categoryApi from '../../apis/category.api'
-
-export type QueryParams = {
-  [key in keyof ProductListConfig]: string
-}
+import useQueryConfig from '../../hooks/useQueryConfig'
 
 export default function ProductList() {
-  const queryParams: QueryParams = useQueryParams()
   // Làm như vậy để lọc ra những param thuộc ProductListConfig, loại bỏ những trường undefined
-  const queryConfig: QueryParams = _.omitBy(
-    {
-      page: queryParams.page || '1',
-      limit: queryParams.limit || '10',
-      order: queryParams.order,
-      sort_by: queryParams.sort_by,
-      category: queryParams.category,
-      exclude: queryParams.exclude,
-      rating_filter: queryParams.rating_filter,
-      price_max: queryParams.price_max,
-      price_min: queryParams.price_min,
-      name: queryParams.name
-    },
-    _.isUndefined
-  )
+  const queryConfig = useQueryConfig()
   // Get api Product
   const { data: productData } = useQuery({
     queryKey: ['ProductList', queryConfig],
@@ -61,8 +41,8 @@ export default function ProductList() {
               <div className='mt-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3'>
                 {productData.data.data.products.map((product: ProductType) => (
                   <div className='col-span-1' key={product._id}>
-                    {shouldRenderDefaultProduct(queryParams) && <DefaultProduct product={product} />}
-                    {!shouldRenderDefaultProduct(queryParams) && <Product product={product} />}
+                    {shouldRenderDefaultProduct(queryConfig) && <DefaultProduct product={product} />}
+                    {!shouldRenderDefaultProduct(queryConfig) && <Product product={product} />}
                   </div>
                 ))}
               </div>

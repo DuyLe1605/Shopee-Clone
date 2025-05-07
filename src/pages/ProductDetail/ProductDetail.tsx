@@ -31,7 +31,7 @@ export default function ProductDetail() {
   // Khi mới vào trang, active sẽ mặc định ở vị trí đầu tiên
   useEffect(() => {
     if (product && product.images.length > 0) {
-      setActiveImage(product.images[1])
+      setActiveImage(product.images[0])
     }
   }, [product])
 
@@ -68,7 +68,8 @@ export default function ProductDetail() {
   const handleRemoveZoom = () => {
     imageRef.current?.removeAttribute('style')
   }
-
+  console.log(product)
+  console.log(currentIndexImages)
   if (!product) return null
   return (
     <div className='bg-gray-200 py-6'>
@@ -93,9 +94,9 @@ export default function ProductDetail() {
               </div>
               <div className='relative mt-4 grid grid-cols-5 gap-1'>
                 <button
-                  title='prev-img'
+                  title='prev-slider'
                   className='absolute left-0 top-1/2 -translate-y-1/2 z-10 h-9 w-5 bg-black/20 text-white cursor-pointer'
-                  onClick={nextSlider}
+                  onClick={prevSlider}
                 >
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
@@ -126,9 +127,9 @@ export default function ProductDetail() {
                   )
                 })}
                 <button
-                  title='prev-img'
+                  title='next-slider'
                   className='absolute right-0 top-1/2 -translate-y-1/2 z-10 h-9 w-5 bg-black/20 text-white cursor-pointer'
-                  onClick={prevSlider}
+                  onClick={nextSlider}
                 >
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
