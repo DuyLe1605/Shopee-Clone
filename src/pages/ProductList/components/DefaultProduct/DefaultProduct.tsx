@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Product } from '../../../../types/product.type'
-import { formatCurrency, formatNumberToSocialStyle } from '../../../../utils/utils'
+import { formatCurrency, formatNumberToSocialStyle, generateNameId } from '../../../../utils/utils'
 import path from '../../../../constants/path'
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 
 export default function DefaultProduct({ product }: Props) {
   return (
-    <Link to={`${path.home}${product._id}`}>
+    <Link to={`${path.home}${generateNameId({ name: product.name, id: product._id })}`}>
       <div className='bg-white rounded-md shadow hover:translate-y-[-0.0625rem] hover:shadow-md duration-100 transition-transform cursor-pointer '>
         {/* IMG */}
         <div className='w-full pt-[100%] relative '>
