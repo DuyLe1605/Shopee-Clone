@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
+
 import productApi from '../../apis/product.api'
 import ProductRating from '../../components/ProductRating'
 import { calcDiscount, formatCurrency, formatNumberToSocialStyle } from '../../utils/utils'
 import InputNumber from '../../components/InputNumber'
 import DOMPurify from 'dompurify'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Product } from '../../types/product.type'
 
 export default function ProductDetail() {
@@ -17,12 +18,13 @@ export default function ProductDetail() {
   // Tạo state của currentIndexImages, là 1 mảng chứa index đầu và cuối + 1, để khi dùng slice, giá trị thứ 2 sẽ bị trừ đi 1
   const [currentIndexImages, setCurrentIndexImages] = useState([0, 5])
   const [activeImage, setActiveImage] = useState('')
+  const imageRef = useRef<HTMLImageElement>(null)
   const product = productDetailData?.data.data
   // Mảng chứa các ảnh trong slider
   const currentImages = useMemo(
     () => (product ? product.images.slice(...currentIndexImages) : []),
     [product, currentIndexImages]
-  )
+  ) // Dùng useMemo để tránh tính toán lại khi rerender
   const discount = product ? calcDiscount(product.price, product.price_before_discount) : 0
 
   // Khi mới vào trang, active sẽ mặc định ở vị trí đầu tiên
@@ -42,6 +44,30 @@ export default function ProductDetail() {
     if (currentIndexImages[0] > 0) setCurrentIndexImages([currentIndexImages[0] - 1, currentIndexImages[1] - 1])
   }
 
+  const handleZoom = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const rect = event.currentTarget.getBoundingClientRect()
+    const image = imageRef.current as HTMLImageElement
+    const { naturalHeight, naturalWidth } = image
+    // Cách 1: Lấy offsetX, offsetY đơn giản khi chúng ta đã xử lý được bubble event
+    const { offsetX, offsetY } = event.nativeEvent
+
+    // Cách 2: Lấy offsetX, offsetY khi chúng ta không xử lý được bubble event
+    // const offsetX = event.pageX - (rect.x + window.scrollX)
+    // const offsetY = event.pageY - (rect.y + window.scrollY)
+
+    const top = offsetY * (1 - naturalHeight / rect.height)
+    const left = offsetX * (1 - naturalWidth / rect.width)
+    image.style.width = naturalWidth + 'px'
+    image.style.height = naturalHeight + 'px'
+    image.style.maxWidth = 'unset'
+    image.style.top = top + 'px'
+    image.style.left = left + 'px'
+  }
+
+  const handleRemoveZoom = () => {
+    imageRef.current?.removeAttribute('style')
+  }
+
   if (!product) return null
   return (
     <div className='bg-gray-200 py-6'>
@@ -50,12 +76,19 @@ export default function ProductDetail() {
           <div className='grid grid-cols-12'>
             {/* Img */}
             <div className='col-span-5 p-4'>
-              <div className='relative w-full pt-[100%]'>
-                <img
-                  src={activeImage}
-                  alt={product.name}
-                  className='absolute top-0 left-0 bg-white w-full h-full object-cover rounded-t-md '
-                />
+              <div
+                className='relative w-full pt-[100%] cursor-zoom-in overflow-hidden'
+                onMouseMove={handleZoom}
+                onMouseLeave={handleRemoveZoom}
+              >
+                {activeImage && (
+                  <img
+                    src={activeImage}
+                    alt={product.name}
+                    className='pointer-events-none absolute top-0 left-0 bg-white w-full h-full object-cover rounded-t-md '
+                    ref={imageRef}
+                  />
+                )}
               </div>
               <div className='relative mt-4 grid grid-cols-5 gap-1'>
                 <button
