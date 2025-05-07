@@ -1,6 +1,6 @@
 import { createSearchParams, Link } from 'react-router-dom'
-import { QueryParams } from '../ProductList'
-import path from '../../../constants/path'
+import { QueryParams } from '../../ProductList'
+import path from '../../../../constants/path'
 
 interface Props {
   queryConfig: QueryParams

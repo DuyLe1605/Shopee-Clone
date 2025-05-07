@@ -1,15 +1,16 @@
 import { Link } from 'react-router-dom'
-import { Product as ProductType } from '../../../types/product.type'
-import { formatCurrency, formatNumberToSocialStyle } from '../../../utils/utils'
+import { Product as ProductType } from '../../../../types/product.type'
+import { calcDiscount, formatCurrency, formatNumberToSocialStyle } from '../../../../utils/utils'
+import path from '../../../../constants/path'
 
 interface Props {
   product: ProductType
 }
 export default function Product({ product }: Props) {
-  const discount = Math.ceil(((product.price_before_discount - product.price) / product.price_before_discount) * 100)
+  const discount = calcDiscount(product.price, product.price_before_discount)
 
   return (
-    <Link to='/'>
+    <Link to={`${path.home}${product._id}`}>
       <div className='bg-white rounded-md shadow hover:translate-y-[-0.0625rem] hover:shadow-md duration-100 transition-transform cursor-pointer '>
         {/* IMG */}
         <div className='w-full pt-[100%] relative '>
@@ -44,9 +45,9 @@ export default function Product({ product }: Props) {
                 <span>{formatCurrency(product.price)}</span>
               </div>
               {/* Discount */}
-              {discount < 100 && (
+              {discount && (
                 <div className='px-1 py-0.5 text-orange-600 text-[0.7rem] rounded-[2px] bg-orange-600/10'>
-                  <span>-{discount}%</span>
+                  <span>{discount}</span>
                 </div>
               )}
             </div>

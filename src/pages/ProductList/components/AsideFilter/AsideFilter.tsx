@@ -1,14 +1,14 @@
 import { createSearchParams, Link, useNavigate } from 'react-router-dom'
-import path from '../../../constants/path'
-import Button from '../../../components/Button'
-import { QueryParams } from '../ProductList'
-import { Category } from '../../../types/category.type'
+import path from '../../../../constants/path'
+import Button from '../../../../components/Button'
+import { QueryParams } from '../../ProductList'
+import { Category } from '../../../../types/category.type'
 import classNames from 'classnames'
 import _ from 'lodash'
-import InputNumber from '../../../components/InputNumber'
+import InputNumber from '../../../../components/InputNumber'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { PriceSchema, priceSchema } from '../../../utils/rules'
+import { PriceSchema, priceSchema } from '../../../../utils/rules'
 import RatingStars from '../RatingStars'
 
 interface Props {
@@ -20,6 +20,7 @@ type FormData = PriceSchema
 export default function AsideFilter({ queryConfig, categories }: Props) {
   const navigate = useNavigate()
   const { category } = queryConfig
+  // Quản lí ô input price
   const {
     control,
     handleSubmit,

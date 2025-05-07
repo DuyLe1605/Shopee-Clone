@@ -84,7 +84,7 @@ Lưu ý rằng những schema mà không có required hoặc default value, thì
 export const priceSchema = schema.pick(['price_min', 'price_max']) as yup.ObjectSchema<{
     price_max: string;
     price_min: string;
-}
+}>
 */
 
 // Dùng để lấy kiểu của schema, không phải tự khai báo thủ công nữa

@@ -19,3 +19,6 @@ export const formatNumberToSocialStyle = (value: number) =>
   })
     .format(value)
     .replace('.', ',')
+
+export const calcDiscount = (price: number, priceBeforeDiscount: number) =>
+  `-${Math.ceil(((priceBeforeDiscount - price) / priceBeforeDiscount) * 100)}%`
