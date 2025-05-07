@@ -5,6 +5,8 @@ import ProductRating from '../../components/ProductRating'
 import { calcDiscount, formatCurrency, formatNumberToSocialStyle } from '../../utils/utils'
 import InputNumber from '../../components/InputNumber'
 import DOMPurify from 'dompurify'
+import { useEffect, useMemo, useState } from 'react'
+import { Product } from '../../types/product.type'
 
 export default function ProductDetail() {
   const { id } = useParams()
@@ -12,11 +14,35 @@ export default function ProductDetail() {
     queryKey: ['ProductDetail', id],
     queryFn: () => productApi.getProductDetail(id as string)
   })
+  // Tạo state của currentIndexImages, là 1 mảng chứa index đầu và cuối + 1, để khi dùng slice, giá trị thứ 2 sẽ bị trừ đi 1
+  const [currentIndexImages, setCurrentIndexImages] = useState([0, 5])
+  const [activeImage, setActiveImage] = useState('')
   const product = productDetailData?.data.data
+  // Mảng chứa các ảnh trong slider
+  const currentImages = useMemo(
+    () => (product ? product.images.slice(...currentIndexImages) : []),
+    [product, currentIndexImages]
+  )
+  const discount = product ? calcDiscount(product.price, product.price_before_discount) : 0
+
+  // Khi mới vào trang, active sẽ mặc định ở vị trí đầu tiên
+  useEffect(() => {
+    if (product && product.images.length > 0) {
+      setActiveImage(product.images[1])
+    }
+  }, [product])
+
+  const nextSlider = () => {
+    //0 và 1 là 2 giá trị đầu và cuối trong cái state chứa index
+    if (currentIndexImages[1] < (product as Product).images.length)
+      setCurrentIndexImages([currentIndexImages[0] + 1, currentIndexImages[1] + 1])
+  }
+  const prevSlider = () => {
+    //0 và 1 là 2 giá trị đầu và cuối trong cái state chứa index
+    if (currentIndexImages[0] > 0) setCurrentIndexImages([currentIndexImages[0] - 1, currentIndexImages[1] - 1])
+  }
 
   if (!product) return null
-
-  const discount = calcDiscount(product.price, product.price_before_discount)
   return (
     <div className='bg-gray-200 py-6'>
       <div className='custom-container'>
@@ -26,7 +52,7 @@ export default function ProductDetail() {
             <div className='col-span-5 p-4'>
               <div className='relative w-full pt-[100%]'>
                 <img
-                  src={product.image}
+                  src={activeImage}
                   alt={product.name}
                   className='absolute top-0 left-0 bg-white w-full h-full object-cover rounded-t-md '
                 />
@@ -35,6 +61,7 @@ export default function ProductDetail() {
                 <button
                   title='prev-img'
                   className='absolute left-0 top-1/2 -translate-y-1/2 z-10 h-9 w-5 bg-black/20 text-white cursor-pointer'
+                  onClick={nextSlider}
                 >
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
@@ -47,10 +74,14 @@ export default function ProductDetail() {
                     <path strokeLinecap='round' strokeLinejoin='round' d='M15.75 19.5 8.25 12l7.5-7.5' />
                   </svg>
                 </button>
-                {product.images.slice(0, 5).map((img, index) => {
-                  const isActive = index === 0
+                {currentImages.map((img) => {
+                  const isActive = img === activeImage
                   return (
-                    <div className='relative w-full pt-[100%] cursor-pointer' key={img}>
+                    <div
+                      className='relative w-full pt-[100%] cursor-pointer'
+                      key={img}
+                      onMouseEnter={() => setActiveImage(img)}
+                    >
                       <img
                         src={img}
                         alt='product-img'
@@ -63,6 +94,7 @@ export default function ProductDetail() {
                 <button
                   title='prev-img'
                   className='absolute right-0 top-1/2 -translate-y-1/2 z-10 h-9 w-5 bg-black/20 text-white cursor-pointer'
+                  onClick={prevSlider}
                 >
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
