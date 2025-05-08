@@ -77,6 +77,7 @@ export const schema = yup
 
 // Ta khai báo 1 Schema tổng, nhưng có trường hợp trong form không dùng hết tất cả các trường, ta có thể dùng omit hoặc pick đẻ lấy:
 
+export const registerSchema = schema.pick(['email', 'password', 'confirm_password'])
 export const loginSchema = schema.pick(['email', 'password']) // Loại bỏ trường confirm password
 export const priceSchema = schema.pick(['price_min', 'price_max'])
 export const searchSchema = schema.pick(['name'])
@@ -90,6 +91,7 @@ export const priceSchema = schema.pick(['price_min', 'price_max']) as yup.Object
 
 // Dùng để lấy kiểu của schema, không phải tự khai báo thủ công nữa
 export type Schema = yup.InferType<typeof schema>
+export type RegisterSchema = yup.InferType<typeof registerSchema>
 export type LoginSchema = yup.InferType<typeof loginSchema>
 export type PriceSchema = yup.InferType<typeof priceSchema>
 export type SearchSchema = yup.InferType<typeof searchSchema>

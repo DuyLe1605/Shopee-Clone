@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import '../Auth.scss'
 import { useForm } from 'react-hook-form'
-import { Schema, schema } from '../../utils/rules'
+import { registerSchema, RegisterSchema } from '../../utils/rules'
 import Input from '../../components/Input'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation } from '@tanstack/react-query'
@@ -12,7 +12,7 @@ import { ErrorResponseApi } from '../../types/utils.type'
 import Button from '../../components/Button'
 import path from '../../constants/path'
 
-type FormData = Schema
+type FormData = RegisterSchema
 export default function Register() {
   const navigator = useNavigate()
   // React Hook Form
@@ -22,7 +22,7 @@ export default function Register() {
     setError,
     formState: { errors }
   } = useForm<FormData>({
-    resolver: yupResolver(schema)
+    resolver: yupResolver(registerSchema)
   })
   const registerAccountMutation = useMutation({
     // Phải return về promise
