@@ -19,7 +19,8 @@ export default function ProductList() {
   const { data: productData } = useQuery({
     queryKey: ['ProductList', queryConfig],
     queryFn: () => productApi.getProducts(queryConfig as ProductListConfig),
-    placeholderData: keepPreviousData
+    placeholderData: keepPreviousData,
+    staleTime: 3 * 60 * 1000
   })
   // Get api Categories, trả về 1 mảng danh sách các Category
   const { data: categoriesData } = useQuery({

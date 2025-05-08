@@ -7,11 +7,13 @@ import { calcDiscount, formatCurrency, formatNumberToSocialStyle, getIdFromNameI
 import InputNumber from '../../components/InputNumber'
 import DOMPurify from 'dompurify'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Product } from '../../types/product.type'
+import { Product as ProductType, ProductListConfig } from '../../types/product.type'
+import Product from '../ProductList/components/Product'
 
 export default function ProductDetail() {
   const { nameId } = useParams()
   const id = getIdFromNameId(nameId as string)
+
   const { data: productDetailData } = useQuery({
     queryKey: ['ProductDetail', id],
     queryFn: () => productApi.getProductDetail(id as string)
@@ -21,6 +23,7 @@ export default function ProductDetail() {
   const [activeImage, setActiveImage] = useState('')
   const imageRef = useRef<HTMLImageElement>(null)
   const product = productDetailData?.data.data
+
   // Mảng chứa các ảnh trong slider
   const currentImages = useMemo(
     () => (product ? product.images.slice(...currentIndexImages) : []),
@@ -28,6 +31,18 @@ export default function ProductDetail() {
   ) // Dùng useMemo để tránh tính toán lại khi rerender
   const discount = product ? calcDiscount(product.price, product.price_before_discount) : 0
 
+  // Danh sách sản phẩm gợi ý
+  const queryConfig = { page: '1', limit: '10', category: product?.category._id }
+  const { data: productData } = useQuery({
+    queryKey: ['ProductList', queryConfig],
+    queryFn: () => productApi.getProducts(queryConfig as ProductListConfig),
+    enabled: Boolean(product),
+    staleTime: 3 * 60 * 1000 // Để stale time là 3 phút, để nếu người dùng chọn danh mục rồi vào sản phẩm, api sẽ không bị gọi nhiều lần
+    // lưu ý là phải set stale time ở cả 2 nơi bằng nhau (ProductDetails và ProductList)
+  })
+
+  ///////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////
   // Khi mới vào trang, active sẽ mặc định ở vị trí đầu tiên
   useEffect(() => {
     if (product && product.images.length > 0) {
@@ -35,9 +50,11 @@ export default function ProductDetail() {
     }
   }, [product])
 
+  ///////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////
   const nextSlider = () => {
     //0 và 1 là 2 giá trị đầu và cuối trong cái state chứa index
-    if (currentIndexImages[1] < (product as Product).images.length)
+    if (currentIndexImages[1] < (product as ProductType).images.length)
       setCurrentIndexImages([currentIndexImages[0] + 1, currentIndexImages[1] + 1])
   }
   const prevSlider = () => {
@@ -243,6 +260,21 @@ export default function ProductDetail() {
             <div className='p-3.5 bg-gray-100/60 text-lg  uppercase'>Mô tả sản phẩm</div>
             <div className='m-4 mt-5'>
               <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.description ?? '') }}></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className='custom-container mt-8'>
+        <div className=' text-gray-600 text-md uppercase'>Có thể bạn cũng thích</div>
+        <div className='bg-white shadow-md p-5 mt-4'>
+          <div className='pt-4 px-4'>
+            <div className='mt-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3'>
+              {productData &&
+                productData.data.data.products.map((product: ProductType) => (
+                  <div className='col-span-1' key={product._id}>
+                    <Product product={product} />
+                  </div>
+                ))}
             </div>
           </div>
         </div>
