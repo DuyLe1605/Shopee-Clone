@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 
 import productApi from '../../apis/product.api'
@@ -10,8 +10,12 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Product as ProductType, ProductListConfig } from '../../types/product.type'
 import Product from '../ProductList/components/Product'
 import QuantityController from '~/components/QuantityController'
+import purchaseApi from '~/apis/purchase.api'
+import { purchasesStatus } from '~/constants/purchase'
 
 export default function ProductDetail() {
+  // Khi add sản phẩm thành công, ta sẽ bắt queryCLient cập nhật lại
+  const queryClient = useQueryClient()
   // Tạo state quản lí buy Count
   const [buyCount, setBuyCount] = useState<string | number>(1)
 
@@ -43,6 +47,13 @@ export default function ProductDetail() {
     enabled: Boolean(product),
     staleTime: 3 * 60 * 1000 // Để stale time là 3 phút, để nếu người dùng chọn danh mục rồi vào sản phẩm, api sẽ không bị gọi nhiều lần
     // lưu ý là phải set stale time ở cả 2 nơi bằng nhau (ProductDetails và ProductList)
+  })
+  // Thêm product vào giỏ hàng
+  const addToCartMutation = useMutation({
+    mutationFn: (body: { product_id: string; buy_count: number }) => purchaseApi.addToCart(body),
+    onSuccess() {
+      queryClient.invalidateQueries({ queryKey: ['purchases', { status: purchasesStatus.inCart }] }) // Khi invalidate thì ta truyền 1 object có queryKey tương ứng
+    }
   })
 
   ///////////////////////////////////////////////////////////////////////////
@@ -92,6 +103,10 @@ export default function ProductDetail() {
 
   const handleBuyCount = (value: number | string) => {
     setBuyCount(value)
+  }
+
+  const handleAddToCart = () => {
+    addToCartMutation.mutate({ buy_count: buyCount as number, product_id: product?._id as string })
   }
 
   if (!product) return null
@@ -207,7 +222,10 @@ export default function ProductDetail() {
                 <p className='ml-4 text-gray-600 text-[14px]'>{product.quantity} sản phẩm có sẵn</p>
               </div>
               <div className='pt-[15px] pb-7.5 flex items-center gap-[15px] '>
-                <button className='capitalize flex items-center gap-2.5 cursor-pointer px-5 h-12 bg-orange-600/10 text-orange-600 border-1 border-orange-600 hover:bg-orange-600/5'>
+                <button
+                  className='capitalize flex items-center gap-2.5 cursor-pointer px-5 h-12 bg-orange-600/10 text-orange-600 border-1 border-orange-600 hover:bg-orange-600/5'
+                  onClick={handleAddToCart}
+                >
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     fill='none'

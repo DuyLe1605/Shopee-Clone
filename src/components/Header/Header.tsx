@@ -1,6 +1,6 @@
 import { createSearchParams, Link, useNavigate } from 'react-router-dom'
 import Popover from '../Popover'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import authApi from '../../apis/auth.api'
 import { AppContext } from '../../contexts/app.context'
 import { useContext } from 'react'
@@ -10,6 +10,12 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import useQueryConfig from '~/hooks/useQueryConfig'
 import _ from 'lodash'
+import { purchasesStatus } from '~/constants/purchase'
+import purchaseApi from '~/apis/purchase.api'
+import { formatCurrency } from '~/utils/utils'
+import classNames from 'classnames'
+
+const MAX_PURCHASE_IN_CART = 5
 
 export default function Header() {
   const navigate = useNavigate()
@@ -27,9 +33,19 @@ export default function Header() {
     }
   })
 
+  // lấy api danh sách sản phẩm đang trong giỏ hàng
+  const { data: purchasesInCartData } = useQuery({
+    queryKey: ['purchases', { status: purchasesStatus.inCart }],
+    queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart })
+  })
+
   const handleLogout = () => {
     logoutMutation.mutate()
   }
+
+  const purchasesInCart = purchasesInCartData?.data.data
+  const totalPurchaseInCart = purchasesInCart?.length
+  console.log(purchasesInCart)
   const onSubmit = handleSubmit((data) => {
     const config = queryConfig.order
       ? _.omit({ ...queryConfig, name: data.name }, ['order', 'sort_by'])
@@ -181,8 +197,8 @@ export default function Header() {
           <div className='col-span-1'>
             <Popover
               children={
-                <div className='flex justify-end'>
-                  <Link to='/'>
+                <div className='flex justify-end relative'>
+                  <Link to='/' className='relative'>
                     <svg
                       xmlns='http://www.w3.org/2000/svg'
                       fill='none'
@@ -197,64 +213,65 @@ export default function Header() {
                         d='M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z'
                       />
                     </svg>
+                    {totalPurchaseInCart && (
+                      <div className='absolute top-[-5px] left-[60%] h-5.5 min-w-6.5 px-1.5 border-2 border-orange-600 rounded-full bg-white text-orange-900  inline-flex items-center'>
+                        {totalPurchaseInCart}
+                      </div>
+                    )}
                   </Link>
                 </div>
               }
               renderPopover={
-                <div className='bg-white relative shadow-emerald-900 w-100 '>
-                  <h1 className='text-gray-400 h-[40px] inline-flex items-center pl-2.5'>Sản phẩm mới thêm</h1>
-                  {/* Items */}
-                  <div className='flex p-2.5 hover:bg-gray-100'>
+                // Nếu có sản phẩm trong giỏ hàng thì render ra danh sách, còn không thì render ra ảnh không có sản phẩm
+                purchasesInCart && totalPurchaseInCart ? (
+                  <div className='bg-white relative shadow-md  w-100 '>
+                    <h1 className='text-gray-400 h-[40px] inline-flex items-center pl-2.5'>Sản phẩm mới thêm</h1>
+                    {/* Items */}
+                    {purchasesInCart.slice(0, MAX_PURCHASE_IN_CART).map((purchase) => (
+                      <div className='flex p-2.5 hover:bg-gray-100' key={purchase._id}>
+                        <img src={purchase.product.image} alt={purchase.product.name} className='w-[42px]' />
+                        <div className='ml-2.5 grow flex justify-between'>
+                          {/* Text */}
+                          <div className='max-w-[220px] truncate'>{purchase.product.name}</div>
+                          {/* Price */}
+                          <div className='text-orange-600'>₫{formatCurrency(purchase.product.price)}</div>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Go to cart Button group */}
+                    <div className='pl-5 p-2.5 flex justify-between items-center'>
+                      {totalPurchaseInCart > MAX_PURCHASE_IN_CART && (
+                        <div className='text-[12px]'>
+                          <span className='cart-drawer__more-item-count'>
+                            {totalPurchaseInCart - MAX_PURCHASE_IN_CART}
+                          </span>
+                          <span>&nbsp;Thêm hàng vào giỏ</span>
+                        </div>
+                      )}
+
+                      {/* Btn */}
+                      <Link
+                        to='/'
+                        className={classNames(
+                          'h-[34px] bg-orange-600 inline-flex items-center px-3.5 text-white justify-self-end',
+                          { 'ml-auto': totalPurchaseInCart }
+                        )}
+                      >
+                        Xem Giỏ Hàng
+                      </Link>
+                    </div>
+                  </div>
+                ) : (
+                  <div className='flex flex-col justify-center items-center bg-white relative shadow-md  w-100 h-60'>
                     <img
-                      src='https://down-vn.img.susercontent.com/file/sg-11134201-22120-zjhjnl3102kv27_tn'
-                      alt='product'
-                      className='w-[42px]'
+                      src='https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/assets/12fe8880616de161.png'
+                      alt='no-product-in-cart'
+                      className='w-30 h-30'
                     />
-                    <div className='ml-2.5 grow flex justify-between'>
-                      {/* Text */}
-                      <div className='max-w-[220px] truncate'>tikia tikiakatik iakatiki tikiaka akatikiaka ka</div>
-                      {/* Price */}
-                      <div className='text-orange-600'>₫10.000.000</div>
-                    </div>
+                    <p className='text-md'>Chưa có sản phẩm</p>
                   </div>
-                  <div className='flex p-2.5 hover:bg-gray-100'>
-                    <img
-                      src='https://down-vn.img.susercontent.com/file/sg-11134201-22120-zjhjnl3102kv27_tn'
-                      alt='product'
-                      className='w-[42px]'
-                    />
-                    <div className='ml-2.5 grow flex justify-between'>
-                      {/* Text */}
-                      <div className='max-w-[220px] truncate'>tikia tikiakatik iakatiki tikiaka akatikiaka ka</div>
-                      {/* Price */}
-                      <div className='text-orange-600'>₫10.000.000</div>
-                    </div>
-                  </div>
-                  <div className='flex p-2.5 hover:bg-gray-100'>
-                    <img
-                      src='https://down-vn.img.susercontent.com/file/sg-11134201-22120-zjhjnl3102kv27_tn'
-                      alt='product'
-                      className='w-[42px]'
-                    />
-                    <div className='ml-2.5 grow flex justify-between'>
-                      {/* Text */}
-                      <div className='max-w-[220px] truncate'>tikia tikiakatik iakatiki tikiaka akatikiaka ka</div>
-                      {/* Price */}
-                      <div className='text-orange-600'>₫10.000.000</div>
-                    </div>
-                  </div>
-                  {/* Go to cart Button group */}
-                  <div className='p-2.5 flex justify-between items-center'>
-                    <div className='text-[12px]'>
-                      <span className='cart-drawer__more-item-count'>1</span>
-                      <span>&nbsp;Thêm hàng vào giỏ</span>
-                    </div>
-                    {/* Btn */}
-                    <Link to='/' className='h-[34px] bg-orange-600 inline-flex items-center px-3.5 text-white'>
-                      Xem Giỏ Hàng
-                    </Link>
-                  </div>
-                </div>
+                )
               }
               type='cart'
             />
