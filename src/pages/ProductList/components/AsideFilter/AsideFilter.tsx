@@ -158,7 +158,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
                   className=''
                   type='text'
                   placeholder='₫ TỪ'
-                  classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 focus:shadow-sm rounded-sm outline-none border border-gray-400 bg-white'
+                  classNameInput='p-1 w-full border-gray-300 focus:border-gray-500 focus:shadow-sm rounded-sm outline-none border bg-white'
                   classNameError='hidden'
                   onChange={(event) => {
                     field.onChange(event)
@@ -178,7 +178,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
                   className=''
                   type='text'
                   placeholder='₫ ĐẾN'
-                  classNameInput='p-1 w-full outline-none border border-gray-400 focus:border-gray-500 focus:shadow-sm rounded-sm outline-none border border-gray-300 bg-white'
+                  classNameInput='p-1 w-full focus:border-gray-500 focus:shadow-sm rounded-sm outline-none border border-gray-300 bg-white'
                   classNameError='hidden'
                   onChange={(event) => {
                     field.onChange(event)

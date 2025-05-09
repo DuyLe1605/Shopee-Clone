@@ -1,5 +1,5 @@
 import { InputHTMLAttributes } from 'react'
-interface Props extends InputHTMLAttributes<HTMLInputElement> {
+export interface InputNumberProps extends InputHTMLAttributes<HTMLInputElement> {
   errorMessage?: string
   classNameInput?: string
   classNameError?: string
@@ -15,7 +15,7 @@ export default function InputNumber({
   classNameError = 'mt-1 text-red-600 text-sm min-h-[1.25rem]',
   classNameInput = 'p-3 w-full outline-none border border-gray-300 focus:border-gray-500 focus:shadow-sm rounded-sm',
   ...rest
-}: Props) {
+}: InputNumberProps) {
   //
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target

@@ -4,13 +4,17 @@ import { useParams } from 'react-router-dom'
 import productApi from '../../apis/product.api'
 import ProductRating from '../../components/ProductRating'
 import { calcDiscount, formatCurrency, formatNumberToSocialStyle, getIdFromNameId } from '../../utils/utils'
-import InputNumber from '../../components/InputNumber'
+
 import DOMPurify from 'dompurify'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Product as ProductType, ProductListConfig } from '../../types/product.type'
 import Product from '../ProductList/components/Product'
+import QuantityController from '~/components/QuantityController'
 
 export default function ProductDetail() {
+  // Tạo state quản lí buy Count
+  const [buyCount, setBuyCount] = useState<string | number>(1)
+
   const { nameId } = useParams()
   const id = getIdFromNameId(nameId as string)
 
@@ -86,6 +90,15 @@ export default function ProductDetail() {
     imageRef.current?.removeAttribute('style')
   }
 
+  const handleBuyCount = (value: number) => {
+    setBuyCount(value || '')
+  }
+  // Hàm này sẽ xử lí khi người dùng bỏ focus, nó check xem value mà là '' thì sẽ đặt thành 1
+  const handleBlurBuyCount = () => {
+    if (!buyCount) {
+      setBuyCount(1)
+    }
+  }
   if (!product) return null
   return (
     <div className='bg-gray-200 py-6'>
@@ -188,43 +201,14 @@ export default function ProductDetail() {
               </div>
               <div className='mt-8 mb-[15px] flex items-center'>
                 <p className='capitalize w-25 mr-2.5 text-[14px]'>Số lượng</p>
-                <div className='flex items-center justify-center'>
-                  <button
-                    title='minus'
-                    className='h-7 px-1.5 py-[1px] text-gray-600 border-1 rounded-tl-[4px] rounded-bl-[4px] cursor-pointer border-gray-300'
-                  >
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                      strokeWidth={1.5}
-                      stroke='currentColor'
-                      className='size-5'
-                    >
-                      <path strokeLinecap='round' strokeLinejoin='round' d='M5 12h14' />
-                    </svg>
-                  </button>
-                  <InputNumber
-                    classNameInput='h-7 w-11.5 py-0.5 border-t-1 border-b-1 border-gray-300 text-center text-orange-600'
-                    classNameError='hidden'
-                    value={1}
-                  />
-                  <button
-                    title='plus'
-                    className=' h-7 px-1.5 py-[1px] text-gray-600 border-1 rounded-tr-[4px] rounded-br-[4px] cursor-pointer  border-gray-300'
-                  >
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                      strokeWidth={1.5}
-                      stroke='currentColor'
-                      className='size-5'
-                    >
-                      <path strokeLinecap='round' strokeLinejoin='round' d='M12 4.5v15m7.5-7.5h-15' />
-                    </svg>
-                  </button>
-                </div>
+                <QuantityController
+                  value={buyCount}
+                  onIncrease={handleBuyCount}
+                  onDecrease={handleBuyCount}
+                  onType={handleBuyCount}
+                  max={product.quantity}
+                  onBlur={handleBlurBuyCount}
+                />
                 <p className='ml-4 text-gray-600 text-[14px]'>{product.quantity} sản phẩm có sẵn</p>
               </div>
               <div className='pt-[15px] pb-7.5 flex items-center gap-[15px] '>
