@@ -85,8 +85,7 @@ export default function ProductDetail() {
   const handleRemoveZoom = () => {
     imageRef.current?.removeAttribute('style')
   }
-  console.log(product)
-  console.log(currentIndexImages)
+
   if (!product) return null
   return (
     <div className='bg-gray-200 py-6'>
@@ -206,7 +205,7 @@ export default function ProductDetail() {
                     </svg>
                   </button>
                   <InputNumber
-                    classNameInput='h-7 w-11.5 py-[1px] py-0.5 border-t-1 border-b-1 border-gray-300 text-center text-orange-600'
+                    classNameInput='h-7 w-11.5 py-0.5 border-t-1 border-b-1 border-gray-300 text-center text-orange-600'
                     classNameError='hidden'
                     value={1}
                   />
@@ -255,7 +254,7 @@ export default function ProductDetail() {
         </div>
       </div>
       <div className='custom-container mt-4'>
-        <div className='bg-white shadow-md p-5'>
+        <div className='bg-white shadow-md p-5 w-[80%]'>
           <div className='pt-4 px-4'>
             <div className='p-3.5 bg-gray-100/60 text-lg  uppercase'>Mô tả sản phẩm</div>
             <div className='m-4 mt-5'>
@@ -264,18 +263,19 @@ export default function ProductDetail() {
           </div>
         </div>
       </div>
+      {/* Sản phẩm tương tự */}
       <div className='custom-container mt-8'>
         <div className=' text-gray-600 text-md uppercase'>Có thể bạn cũng thích</div>
-        <div className='bg-white shadow-md p-5 mt-4'>
-          <div className='pt-4 px-4'>
-            <div className='mt-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3'>
-              {productData &&
-                productData.data.data.products.map((product: ProductType) => (
+        <div className=' mt-4 w-[80%]'>
+          <div className='mt-2 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'>
+            {productData &&
+              productData.data.data.products
+                .filter((prd) => prd._id !== product._id)
+                .map((product: ProductType) => (
                   <div className='col-span-1' key={product._id}>
                     <Product product={product} />
                   </div>
                 ))}
-            </div>
           </div>
         </div>
       </div>
