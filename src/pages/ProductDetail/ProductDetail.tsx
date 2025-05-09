@@ -90,15 +90,10 @@ export default function ProductDetail() {
     imageRef.current?.removeAttribute('style')
   }
 
-  const handleBuyCount = (value: number) => {
-    setBuyCount(value || '')
+  const handleBuyCount = (value: number | string) => {
+    setBuyCount(value)
   }
-  // Hàm này sẽ xử lí khi người dùng bỏ focus, nó check xem value mà là '' thì sẽ đặt thành 1
-  const handleBlurBuyCount = () => {
-    if (!buyCount) {
-      setBuyCount(1)
-    }
-  }
+
   if (!product) return null
   return (
     <div className='bg-gray-200 py-6'>
@@ -207,7 +202,7 @@ export default function ProductDetail() {
                   onDecrease={handleBuyCount}
                   onType={handleBuyCount}
                   max={product.quantity}
-                  onBlur={handleBlurBuyCount}
+                  onInputBlur={handleBuyCount}
                 />
                 <p className='ml-4 text-gray-600 text-[14px]'>{product.quantity} sản phẩm có sẵn</p>
               </div>

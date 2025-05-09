@@ -1,10 +1,12 @@
 import InputNumber, { InputNumberProps } from '../InputNumber'
 
+type handleFunc = (value: number | string) => void
 interface Props extends InputNumberProps {
   max?: number
-  onIncrease?: (value: number) => void
-  onDecrease?: (value: number) => void
-  onType?: (value: number) => void
+  onIncrease?: handleFunc
+  onDecrease?: handleFunc
+  onType?: handleFunc
+  onInputBlur?: handleFunc
   classNameWrapper?: string
 }
 
@@ -14,19 +16,22 @@ export default function QuantityController({
   onIncrease,
   onDecrease,
   onType,
-  onBlur,
+  onInputBlur,
   classNameWrapper
 }: Props) {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // _value là giá trị khi người dùng nhập
 
     let _value = Number(event.target.value)
+
     // Kiểm tra nếu người dùng nhập quá max hoặc bé hơn 1,value tự động được đặt thành hợp lệ
     if (max !== undefined && _value > max) {
       _value = max - 1
     }
+
     if (onType) {
-      onType(_value)
+      // Nếu người dùng xóa hết thì value sẽ bằng 0, nếu như thế thì ta hiển thị '' rỗng
+      onType(_value || '')
     }
   }
   const handleIncrease = () => {
@@ -55,6 +60,12 @@ export default function QuantityController({
       onDecrease(_value)
     }
   }
+  // Hàm này sẽ xử lí khi người dùng bỏ focus, nó check xem value mà là '' thì sẽ đặt thành 1
+  const handleInputBlur = () => {
+    if (onInputBlur && !value) {
+      onInputBlur(1)
+    }
+  }
 
   return (
     <div className={'flex items-center justify-center' + classNameWrapper}>
@@ -79,7 +90,7 @@ export default function QuantityController({
         classNameError='hidden'
         value={value}
         onChange={handleChange}
-        onBlur={onBlur}
+        onBlur={handleInputBlur}
       />
       <button
         title='plus'
