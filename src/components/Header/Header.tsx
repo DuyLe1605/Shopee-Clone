@@ -1,6 +1,6 @@
 import { createSearchParams, Link, useNavigate } from 'react-router-dom'
 import Popover from '../Popover'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import authApi from '../../apis/auth.api'
 import { AppContext } from '../../contexts/app.context'
 import { useContext } from 'react'
@@ -12,12 +12,13 @@ import useQueryConfig from '~/hooks/useQueryConfig'
 import _ from 'lodash'
 import { purchasesStatus } from '~/constants/purchase'
 import purchaseApi from '~/apis/purchase.api'
-import { formatCurrency } from '~/utils/utils'
+import { formatCurrency, generateNameId } from '~/utils/utils'
 import classNames from 'classnames'
 
 const MAX_PURCHASE_IN_CART = 5
 
 export default function Header() {
+  const queryClient = useQueryClient()
   const navigate = useNavigate()
   const queryConfig = useQueryConfig()
   const { register, handleSubmit } = useForm<SearchSchema>({
@@ -30,13 +31,15 @@ export default function Header() {
     onSuccess: () => {
       setIsAuthenticated(false)
       setProfile(null)
+      queryClient.removeQueries({ queryKey: ['purchases', { status: purchasesStatus.inCart }] })
     }
   })
 
   // lấy api danh sách sản phẩm đang trong giỏ hàng
   const { data: purchasesInCartData } = useQuery({
     queryKey: ['purchases', { status: purchasesStatus.inCart }],
-    queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart })
+    queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart }),
+    enabled: isAuthenticated
   })
 
   const handleLogout = () => {
@@ -45,7 +48,7 @@ export default function Header() {
 
   const purchasesInCart = purchasesInCartData?.data.data
   const totalPurchaseInCart = purchasesInCart?.length
-  console.log(purchasesInCart)
+
   const onSubmit = handleSubmit((data) => {
     const config = queryConfig.order
       ? _.omit({ ...queryConfig, name: data.name }, ['order', 'sort_by'])
@@ -228,7 +231,11 @@ export default function Header() {
                     <h1 className='text-gray-400 h-[40px] inline-flex items-center pl-2.5'>Sản phẩm mới thêm</h1>
                     {/* Items */}
                     {purchasesInCart.slice(0, MAX_PURCHASE_IN_CART).map((purchase) => (
-                      <div className='flex p-2.5 hover:bg-gray-100' key={purchase._id}>
+                      <Link
+                        to={`${path.home}${generateNameId({ name: purchase.product.name, id: purchase.product._id })}`}
+                        className='flex p-2.5 hover:bg-gray-100'
+                        key={purchase._id}
+                      >
                         <img src={purchase.product.image} alt={purchase.product.name} className='w-[42px]' />
                         <div className='ml-2.5 grow flex justify-between'>
                           {/* Text */}
@@ -236,7 +243,7 @@ export default function Header() {
                           {/* Price */}
                           <div className='text-orange-600'>₫{formatCurrency(purchase.product.price)}</div>
                         </div>
-                      </div>
+                      </Link>
                     ))}
 
                     {/* Go to cart Button group */}
@@ -252,7 +259,7 @@ export default function Header() {
 
                       {/* Btn */}
                       <Link
-                        to='/'
+                        to={path.cart}
                         className={classNames(
                           'h-[34px] bg-orange-600 inline-flex items-center px-3.5 text-white justify-self-end',
                           { 'ml-auto': totalPurchaseInCart }
