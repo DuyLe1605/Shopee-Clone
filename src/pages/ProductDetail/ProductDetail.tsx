@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import productApi from '../../apis/product.api'
 import ProductRating from '../../components/ProductRating'
-import { calcDiscount, formatCurrency, formatNumberToSocialStyle, getIdFromNameId } from '../../utils/utils'
+import { calcDiscount, formatCurrency, formatNumberToSocialStyle, getIdFromNameId } from '~/utils/utils.ts'
 
 import DOMPurify from 'dompurify'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -12,6 +12,7 @@ import Product from '../ProductList/components/Product'
 import QuantityController from '~/components/QuantityController'
 import purchaseApi from '~/apis/purchase.api'
 import { purchasesStatus } from '~/constants/purchase'
+import { Flip, toast } from 'react-toastify'
 
 export default function ProductDetail() {
   // Khi add sản phẩm thành công, ta sẽ bắt queryCLient cập nhật lại
@@ -53,6 +54,17 @@ export default function ProductDetail() {
     mutationFn: (body: { product_id: string; buy_count: number }) => purchaseApi.addToCart(body),
     onSuccess() {
       queryClient.invalidateQueries({ queryKey: ['purchases', { status: purchasesStatus.inCart }] }) // Khi invalidate thì ta truyền 1 object có queryKey tương ứng
+      toast.success('Thêm sản phẩm vào giỏ hàng thành công ', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'colored',
+        transition: Flip
+      })
     }
   })
 
@@ -109,6 +121,7 @@ export default function ProductDetail() {
     addToCartMutation.mutate({ buy_count: buyCount as number, product_id: product?._id as string })
   }
 
+  // -------------------------------------RETURN--------------------------------------------
   if (!product) return null
   return (
     <div className='bg-gray-200 py-6'>

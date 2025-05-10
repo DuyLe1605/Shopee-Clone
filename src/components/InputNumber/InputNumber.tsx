@@ -1,4 +1,4 @@
-import { InputHTMLAttributes } from 'react'
+import { InputHTMLAttributes, useState } from 'react'
 export interface InputNumberProps extends InputHTMLAttributes<HTMLInputElement> {
   errorMessage?: string
   classNameInput?: string
@@ -14,23 +14,36 @@ export default function InputNumber({
   onChange,
   classNameError = 'mt-1 text-red-600 text-sm min-h-[1.25rem]',
   classNameInput = 'p-3 w-full outline-none border border-gray-300 focus:border-gray-500 focus:shadow-sm rounded-sm',
+  value = '',
   ...rest
 }: InputNumberProps) {
+  const [localValue, setLocalValue] = useState<string>(value as string)
+
   //
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target
 
     // Kiểm tra xem value trong ô input có phải số hoặc chuỗi rỗng hay không (Khác chữ cái), và có hàm onChange dc truyền vào
     //  /^\d+$/ là biểu thức chính quy kiểm tra có phải số không
-    if ((/^\d+$/.test(value) || value === '') && onChange) {
+    if (/^\d+$/.test(value) || value === '') {
       // Truyền event vào trong hàm onChange
-      onChange(event)
+      if (onChange) {
+        onChange(event)
+      }
+      setLocalValue(value)
     }
   }
 
   return (
     <div className={className}>
-      <input autoComplete='on' className={classNameInput} {...rest} onChange={handleChange} ref={ref} />
+      <input
+        autoComplete='on'
+        className={classNameInput}
+        {...rest}
+        onChange={handleChange}
+        value={value || localValue}
+        ref={ref}
+      />
       <div className={classNameError}>{errorMessage}</div>
     </div>
   )

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import InputNumber, { InputNumberProps } from '../InputNumber'
 
 type handleFunc = (value: number | string) => void
@@ -19,9 +20,10 @@ export default function QuantityController({
   onInputBlur,
   classNameWrapper
 }: Props) {
+  // Nếu người dùng không nhập value và các hàm onChange, ta sẽ tự set local State tương ứng
+  const [localValue, setLocalValue] = useState<string | number>(Number(value || 1))
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // _value là giá trị khi người dùng nhập
-
     let _value = Number(event.target.value)
 
     // Kiểm tra nếu người dùng nhập quá max hoặc bé hơn 1,value tự động được đặt thành hợp lệ
@@ -33,12 +35,12 @@ export default function QuantityController({
       // Nếu người dùng xóa hết thì value sẽ bằng 0, nếu như thế thì ta hiển thị '' rỗng
       onType(_value || '')
     }
+    setLocalValue(_value || '')
   }
   const handleIncrease = () => {
     // _value là giá trị value được truyền qua props
-    let _value = Number(value)
+    let _value = Number(value || localValue) + 1
 
-    _value++
     if (max !== undefined && _value > max) {
       _value = max
     }
@@ -46,12 +48,12 @@ export default function QuantityController({
     if (onIncrease) {
       onIncrease(_value)
     }
+    setLocalValue(_value)
   }
   const handleDecrease = () => {
     // _value là giá trị value được truyền qua props
-    let _value = Number(value)
+    let _value = Number(value || localValue) - 1
 
-    _value--
     if (_value < 1) {
       _value = 1
     }
@@ -59,12 +61,14 @@ export default function QuantityController({
     if (onDecrease) {
       onDecrease(_value)
     }
+    setLocalValue(_value)
   }
   // Hàm này sẽ xử lí khi người dùng bỏ focus, nó check xem value mà là '' thì sẽ đặt thành 1
   const handleInputBlur = () => {
     if (onInputBlur && !value) {
       onInputBlur(1)
     }
+    setLocalValue(1)
   }
 
   return (
@@ -88,7 +92,7 @@ export default function QuantityController({
       <InputNumber
         classNameInput='h-7 w-11.5 py-0.5 border-t-1 border-b-1 border-gray-300 text-center text-orange-600'
         classNameError='hidden'
-        value={value}
+        value={value || localValue}
         onChange={handleChange}
         onBlur={handleInputBlur}
       />
