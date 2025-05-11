@@ -39,7 +39,7 @@ export default function Header() {
   const { data: purchasesInCartData } = useQuery({
     queryKey: ['purchases', { status: purchasesStatus.inCart }],
     queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart }),
-    enabled: isAuthenticated
+    enabled: isAuthenticated // Dòng này để đảm bảo khi logout, tự động check xem đã auth để gửi api đi
   })
 
   const handleLogout = () => {
