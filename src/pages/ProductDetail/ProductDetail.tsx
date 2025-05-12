@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 
 import productApi from '../../apis/product.api'
 import ProductRating from '../../components/ProductRating'
-import { calcDiscount, formatCurrency, formatNumberToSocialStyle, getIdFromNameId } from '~/utils/utils.ts'
+import { calcDiscountPerCent, formatCurrency, formatNumberToSocialStyle, getIdFromNameId } from '~/utils/utils.ts'
 
 import DOMPurify from 'dompurify'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -38,7 +38,7 @@ export default function ProductDetail() {
     () => (product ? product.images.slice(...currentIndexImages) : []),
     [product, currentIndexImages]
   ) // Dùng useMemo để tránh tính toán lại khi rerender
-  const discount = product ? calcDiscount(product.price, product.price_before_discount) : 0
+  const discount = product ? calcDiscountPerCent(product.price, product.price_before_discount) : 0
 
   // Danh sách sản phẩm gợi ý
   const queryConfig = { page: '1', limit: '10', category: product?.category._id }

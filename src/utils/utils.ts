@@ -20,7 +20,7 @@ export const formatNumberToSocialStyle = (value: number) =>
     .format(value)
     .replace('.', ',')
 
-export const calcDiscount = (price: number, priceBeforeDiscount: number) =>
+export const calcDiscountPerCent = (price: number, priceBeforeDiscount: number) =>
   `-${Math.ceil(((priceBeforeDiscount - price) / priceBeforeDiscount) * 100)}%`
 
 const removeSpecialCharacter = (str: string) =>

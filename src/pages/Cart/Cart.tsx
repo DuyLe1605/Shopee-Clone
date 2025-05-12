@@ -12,6 +12,8 @@ import { formatCurrency, generateNameId } from '~/utils/utils'
 import { produce } from 'immer'
 
 import _ from 'lodash'
+import { Flip, toast } from 'react-toastify'
+import classNames from 'classnames'
 
 interface ExtendedPurchase extends Purchase {
   checked: boolean
@@ -33,12 +35,47 @@ export default function Cart() {
       setIsUpdating(false)
     }
   })
+  const deletePurchasesMutation = useMutation({
+    mutationFn: purchaseApi.deletePurchases,
+    onSuccess: () => {
+      purchasesInCartDataRefetch()
+    }
+  })
+  const buyProductMutation = useMutation({
+    mutationFn: purchaseApi.buyProduct,
+    onSuccess: () => {
+      purchasesInCartDataRefetch()
+      toast.success('Mua hàng thành công :D', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'colored',
+        transition: Flip
+      })
+    }
+  })
+
   const purchasesInCart = purchasesInCartData?.data.data
   const isAllPurchaseChecked = useMemo(
     () => extendedPurchases.every((purchase) => purchase.checked),
     [extendedPurchases]
   ) // Nếu tất cả purchase đều dc checked thì true
 
+  // Checked
+  const checkedPurchases = extendedPurchases.filter((purchase) => purchase.checked)
+  const checkedPurchasesCount = checkedPurchases.length
+  const totalCheckedPurchasesPrice = checkedPurchases.reduce(
+    (result, purchase) => (result += purchase.price * purchase.buy_count),
+    0
+  )
+  const totalCheckedPurchasesSavingPrice = checkedPurchases.reduce(
+    (result, purchase) => (result += (purchase.price_before_discount - purchase.price) * purchase.buy_count),
+    0
+  )
   useEffect(() => {
     // Hàm sẽ chạy khi mới vào và chạy lại khi purchasesInCart thay đổi, nó sẽ thêm các giá trị vào các Obj purchase
     setExtendedPurchases((prev) => {
@@ -69,8 +106,7 @@ export default function Cart() {
 
   // Hàm này sẽ có tác dụng ngăn người dùng spam liên tục
   const handleQuantity = (purchaseIndex: number, value: number, enable: boolean) => {
-    console.log(isUpdating)
-    if (!enable) return // nếu vi phạm quy tắc,ví dụ decrease khi bằng 1 là không hợp lí thì sẽ return luôn,không gọi api
+    if (!enable || isUpdating) return // nếu vi phạm quy tắc,ví dụ decrease khi bằng 1 là không hợp lí thì sẽ return luôn,không gọi api
 
     const purchase = extendedPurchases[purchaseIndex]
 
@@ -89,6 +125,26 @@ export default function Cart() {
         draft[purchaseIndex].buy_count = value
       })
     )
+  }
+
+  // Delete purchase
+  const handleDelete = (purchaseIndex: number) => () => {
+    const purchaseId = extendedPurchases[purchaseIndex]._id
+    deletePurchasesMutation.mutate([purchaseId])
+  }
+  const handleDeletePurchases = () => {
+    const purchaseIds = checkedPurchases.map((purchase) => purchase._id)
+    deletePurchasesMutation.mutate(purchaseIds)
+  }
+  // Buy product
+  const handleBuyProduct = () => {
+    if (checkedPurchasesCount > 0) {
+      const body = checkedPurchases.map((purchase) => ({
+        product_id: purchase.product._id,
+        buy_count: purchase.buy_count
+      }))
+      buyProductMutation.mutate(body)
+    }
   }
   return (
     <div className='bg-neutral-100 pt-5'>
@@ -178,7 +234,10 @@ export default function Cart() {
                 </div>
                 {/* Action */}
                 <div className='grow text-center'>
-                  <button className='cursor-pointer bg-none text-black transition-colors hover:text-orange-600'>
+                  <button
+                    className='cursor-pointer bg-none text-black transition-colors hover:text-orange-600'
+                    onClick={handleDelete(index)}
+                  >
                     Xóa
                   </button>
                 </div>
@@ -198,21 +257,33 @@ export default function Cart() {
             <button className='mx-3 border-none bg-none cursor-pointer' onClick={handleCheckedAll}>
               Chọn tất cả ({extendedPurchases?.length})
             </button>
-            <button className='mx-3 border-none bg-none cursor-pointer'>Xóa</button>
+            <button className='mx-3 border-none bg-none cursor-pointer' onClick={handleDeletePurchases}>
+              Xóa
+            </button>
           </div>
 
           <div className='mt-5 flex flex-col sm:ml-auto sm:mt-0 sm:flex-row sm:items-center'>
             <div>
               <div className='flex items-center sm:justify-end'>
-                <div>Tổng thanh toán (0 sản phẩm):</div>
-                <div className='ml-2 text-2xl text-orange'>₫138000</div>
+                <div>Tổng thanh toán ({checkedPurchasesCount}):</div>
+                <div className='ml-2 text-2xl text-orange'>₫{formatCurrency(totalCheckedPurchasesPrice)}</div>
               </div>
               <div className='flex items-center text-sm sm:justify-end'>
                 <div className='text-gray-500'>Tiết kiệm</div>
-                <div className='ml-6 text-orange'>₫138000</div>
+                <div className='ml-6 text-orange'>₫{formatCurrency(totalCheckedPurchasesSavingPrice)}</div>
               </div>
             </div>
-            <Button className='mt-5  flex h-10 w-52 items-center justify-center bg-red-500 text-sm uppercase text-white hover:bg-red-600 sm:ml-4 sm:mt-0 cursor-pointer'>
+            <Button
+              className={classNames(
+                'mt-5 flex h-10 w-52 items-center justify-center text-sm uppercase text-white sm:ml-4 sm:mt-0 ',
+                {
+                  'cursor-not-allowed  bg-red-300': !checkedPurchasesCount,
+                  'cursor-pointer bg-red-500 hover:bg-red-600': checkedPurchasesCount
+                }
+              )}
+              onClick={handleBuyProduct}
+              disabled={buyProductMutation.isPending}
+            >
               Mua hàng
             </Button>
           </div>

@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom'
 import { Product as ProductType } from '../../../../types/product.type'
-import { calcDiscount, formatCurrency, formatNumberToSocialStyle, generateNameId } from '../../../../utils/utils'
+import { calcDiscountPerCent, formatCurrency, formatNumberToSocialStyle, generateNameId } from '../../../../utils/utils'
 import path from '../../../../constants/path'
 
 interface Props {
   product: ProductType
 }
 export default function Product({ product }: Props) {
-  const discount = calcDiscount(product.price, product.price_before_discount)
+  const discount = calcDiscountPerCent(product.price, product.price_before_discount)
 
   return (
     <Link to={`${path.home}${generateNameId({ name: product.name, id: product._id })}`}>
