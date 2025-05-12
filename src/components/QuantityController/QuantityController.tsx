@@ -4,8 +4,8 @@ import InputNumber, { InputNumberProps } from '../InputNumber'
 type handleFunc = (value: number | string) => void
 interface Props extends InputNumberProps {
   max?: number
-  onIncrease?: handleFunc
-  onDecrease?: handleFunc
+  onIncrease?: (value: number) => void
+  onDecrease?: (value: number) => void
   onType?: handleFunc
   onInputBlur?: handleFunc
   classNameWrapper?: string
@@ -18,7 +18,8 @@ export default function QuantityController({
   onDecrease,
   onType,
   onInputBlur,
-  classNameWrapper
+  classNameWrapper,
+  ...rest
 }: Props) {
   // Nếu người dùng không nhập value và các hàm onChange, ta sẽ tự set local State tương ứng
   const [localValue, setLocalValue] = useState<string | number>(Number(value || 1))
@@ -65,8 +66,9 @@ export default function QuantityController({
   }
   // Hàm này sẽ xử lí khi người dùng bỏ focus, nó check xem value mà là '' thì sẽ đặt thành 1
   const handleInputBlur = () => {
-    if (onInputBlur && !value) {
-      onInputBlur(1)
+    const _value = Number(value || localValue)
+    if (onInputBlur) {
+      onInputBlur(_value || 1)
     }
     setLocalValue(1)
   }
@@ -95,6 +97,7 @@ export default function QuantityController({
         value={value || localValue}
         onChange={handleChange}
         onBlur={handleInputBlur}
+        {...rest}
       />
       <button
         title='plus'
