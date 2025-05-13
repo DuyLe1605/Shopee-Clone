@@ -1,5 +1,8 @@
 import { User } from '../types/user.type'
 
+// Tạo một đối tượng EventTarget mới để làm trung gian phát và nghe sự kiện liên quan đến localStorage
+export const LocalStorageEventTarget = new EventTarget()
+
 // Access Token
 export const saveAccessTokenToLS = (access_token: string) => {
   localStorage.setItem('access_token', access_token)
@@ -21,4 +24,11 @@ export const getProfileFromLS = () => {
 export const clearLocalStorage = () => {
   localStorage.removeItem('access_token')
   localStorage.removeItem('profile')
+
+  // Tạo một sự kiện mới với tên 'clearLS'
+  // Sự kiện này có thể được lắng nghe ở nơi khác trong ứng dụng
+  const clearLSEvent = new Event('clearLS')
+  // Phát (dispatch) sự kiện 'clearLS' từ LocalStorageEventTarget
+  // Tất cả các listener đang lắng nghe 'clearLS' trên đối tượng này sẽ được gọi
+  LocalStorageEventTarget.dispatchEvent(clearLSEvent)
 }

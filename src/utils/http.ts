@@ -69,6 +69,13 @@ class Http {
 
           notify(message)
         }
+
+        // Khi access token hết hạn, nó sẽ trả về status code 401
+        if (error.status === HttpStatusCode.Unauthorized) {
+          // Ta sẽ clear Local Storage
+          clearLocalStorage()
+        }
+
         return Promise.reject(error)
       }
     )
