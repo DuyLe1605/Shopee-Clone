@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import purchaseApi from '~/apis/purchase.api'
 import Button from '~/components/Button'
 import QuantityController from '~/components/QuantityController'
@@ -14,16 +14,12 @@ import { produce } from 'immer'
 import _ from 'lodash'
 import { Flip, toast } from 'react-toastify'
 import classNames from 'classnames'
-
-interface ExtendedPurchase extends Purchase {
-  checked: boolean
-  disable: boolean
-}
+import { AppContext } from '~/contexts/app.context'
 
 export default function Cart() {
   // Tạo state là Purchase in cart nhưng mở rộng thêm
   const [isUpdating, setIsUpdating] = useState(false)
-  const [extendedPurchases, setExtendedPurchases] = useState<ExtendedPurchase[]>([])
+  const { extendedPurchases, setExtendedPurchases } = useContext(AppContext)
   const { data: purchasesInCartData, refetch: purchasesInCartDataRefetch } = useQuery({
     queryKey: ['purchases', { status: purchasesStatus.inCart }],
     queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart })
@@ -66,16 +62,24 @@ export default function Cart() {
   ) // Nếu tất cả purchase đều dc checked thì true
 
   // Checked
-  const checkedPurchases = extendedPurchases.filter((purchase) => purchase.checked)
+  const checkedPurchases = useMemo(() => extendedPurchases.filter((purchase) => purchase.checked), [extendedPurchases])
   const checkedPurchasesCount = checkedPurchases.length
-  const totalCheckedPurchasesPrice = checkedPurchases.reduce(
-    (result, purchase) => (result += purchase.price * purchase.buy_count),
-    0
+  const totalCheckedPurchasesPrice = useMemo(
+    () => checkedPurchases.reduce((result, purchase) => (result += purchase.price * purchase.buy_count), 0),
+    [checkedPurchases]
   )
-  const totalCheckedPurchasesSavingPrice = checkedPurchases.reduce(
-    (result, purchase) => (result += (purchase.price_before_discount - purchase.price) * purchase.buy_count),
-    0
+  const totalCheckedPurchasesSavingPrice = useMemo(
+    () =>
+      checkedPurchases.reduce(
+        (result, purchase) => (result += (purchase.price_before_discount - purchase.price) * purchase.buy_count),
+        0
+      ),
+    [checkedPurchases]
   )
+
+  const location = useLocation()
+  const chosenPurchaseIdFromLocation = (location.state as { purchaseId: string } | null)?.purchaseId
+  console.log(extendedPurchases)
   useEffect(() => {
     // Hàm sẽ chạy khi mới vào và chạy lại khi purchasesInCart thay đổi, nó sẽ thêm các giá trị vào các Obj purchase
     setExtendedPurchases((prev) => {
@@ -83,14 +87,24 @@ export default function Cart() {
       // Mà purchasesInCart không có thuộc tính checked, nên ta phải dùng hàm keyBy để tạo 1 object có key là _id, từ đó truy cập Object mới thông qua id của prev
       const extendedPurchasesObject = _.keyBy(prev, '_id')
       return (
-        purchasesInCart?.map((purchase) => ({
-          ...purchase,
-          disable: false,
-          checked: Boolean(extendedPurchasesObject[purchase._id]?.checked)
-        })) || []
+        purchasesInCart?.map((purchase) => {
+          const isChosenPurchaseIdFromLocation = chosenPurchaseIdFromLocation === purchase._id
+          return {
+            ...purchase,
+            disable: false,
+            checked: isChosenPurchaseIdFromLocation || Boolean(extendedPurchasesObject[purchase._id]?.checked)
+          }
+        }) || []
       )
     })
-  }, [purchasesInCart])
+  }, [purchasesInCart, chosenPurchaseIdFromLocation, setExtendedPurchases])
+
+  useEffect(() => {
+    return () => {
+      // Xóa state trong location khi người dùng f5 lại trang
+      history.replaceState(null, '')
+    }
+  }, [])
 
   const handleChecked = (purchaseIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
     setExtendedPurchases(
@@ -146,6 +160,32 @@ export default function Cart() {
       buyProductMutation.mutate(body)
     }
   }
+
+  // không có sản phẩm trong giỏ
+  if (purchasesInCart?.length === 0) {
+    return (
+      <div className='py-45 bg-neutral-100 border-b-3 border-orange-600 '>
+        <div className='custom-container '>
+          <div className='flex flex-col justify-center items-center '>
+            <img
+              src='https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/assets/12fe8880616de161.png'
+              alt='no-product-in-cart'
+              className='w-35 h-35'
+            />
+            <p className='mt-4 text-lg text-gray-500 font-bold'>Giỏ hàng của bạn còn trống</p>
+            <Link
+              to={{ pathname: path.home }}
+              className='uppercase mt-8 text-white bg-orange-600 px-10 py-3 hover:bg-orange-600/90 hover:shadow-md'
+            >
+              Mua ngay
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Có sản phẩm trong giỏ
   return (
     <div className='bg-neutral-100 pt-5'>
       <div className='custom-container mb-3'>

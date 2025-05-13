@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import productApi from '../../apis/product.api'
 import ProductRating from '../../components/ProductRating'
@@ -13,13 +13,14 @@ import QuantityController from '~/components/QuantityController'
 import purchaseApi from '~/apis/purchase.api'
 import { purchasesStatus } from '~/constants/purchase'
 import { Flip, toast } from 'react-toastify'
+import path from '~/constants/path'
 
 export default function ProductDetail() {
   // Khi add sản phẩm thành công, ta sẽ bắt queryCLient cập nhật lại
   const queryClient = useQueryClient()
   // Tạo state quản lí buy Count
   const [buyCount, setBuyCount] = useState<string | number>(1)
-
+  const navigate = useNavigate()
   const { nameId } = useParams()
   const id = getIdFromNameId(nameId as string)
 
@@ -51,21 +52,7 @@ export default function ProductDetail() {
   })
   // Thêm product vào giỏ hàng
   const addToCartMutation = useMutation({
-    mutationFn: (body: { product_id: string; buy_count: number }) => purchaseApi.addToCart(body),
-    onSuccess() {
-      queryClient.invalidateQueries({ queryKey: ['purchases', { status: purchasesStatus.inCart }] }) // Khi invalidate thì ta truyền 1 object có queryKey tương ứng
-      toast.success('Thêm sản phẩm vào giỏ hàng thành công ', {
-        position: 'top-right',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'colored',
-        transition: Flip
-      })
-    }
+    mutationFn: (body: { product_id: string; buy_count: number }) => purchaseApi.addToCart(body)
   })
 
   ///////////////////////////////////////////////////////////////////////////
@@ -118,7 +105,38 @@ export default function ProductDetail() {
   }
 
   const handleAddToCart = () => {
-    addToCartMutation.mutate({ buy_count: buyCount as number, product_id: product?._id as string })
+    addToCartMutation.mutate(
+      { buy_count: buyCount as number, product_id: product?._id as string },
+      {
+        onSuccess() {
+          queryClient.invalidateQueries({ queryKey: ['purchases', { status: purchasesStatus.inCart }] }) // Khi invalidate thì ta truyền 1 object có queryKey tương ứng
+          toast.success('Thêm sản phẩm vào giỏ hàng thành công ', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'colored',
+            transition: Flip
+          })
+        }
+      }
+    )
+  }
+
+  // Buy Now
+  const buyNow = () => {
+    addToCartMutation.mutate(
+      { buy_count: buyCount as number, product_id: product?._id as string },
+      {
+        onSuccess: (data) => {
+          const purchaseId = data.data.data._id
+          navigate({ pathname: path.cart }, { state: { purchaseId } })
+        }
+      }
+    )
   }
 
   // -------------------------------------RETURN--------------------------------------------
@@ -255,7 +273,10 @@ export default function ProductDetail() {
                   </svg>
                   Thêm vào giỏ hàng
                 </button>
-                <button className='px-5 h-12 w-45 block capitalize text-white bg-orange-600 hover:bg-orange-600/95 cursor-pointer'>
+                <button
+                  className='px-5 h-12 w-45 block capitalize text-white bg-orange-600 hover:bg-orange-600/95 cursor-pointer'
+                  onClick={buyNow}
+                >
                   Mua ngay
                 </button>
               </div>
