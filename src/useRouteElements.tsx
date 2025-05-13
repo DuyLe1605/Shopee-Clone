@@ -11,6 +11,9 @@ import path from './constants/path'
 import ProductDetail from './pages/ProductDetail'
 import Cart from '~/pages/Cart'
 import CartLayout from './layouts/CartLayout/CartLayout'
+import UserLayout from './pages/User/layout/UserLayout'
+import ChangePassword from './pages/User/pages/ChangePassword'
+import HistoryPurchase from './pages/User/pages/HistoryPurchase'
 
 // eslint-disable-next-line react-refresh/only-export-components
 function ProtectedRoute() {
@@ -31,12 +34,18 @@ export default function useRouteElements() {
       element: <ProtectedRoute />,
       children: [
         {
-          path: path.profile,
+          path: path.user,
           element: (
             <MainLayout>
-              <Profile />
+              <UserLayout />
             </MainLayout>
-          )
+          ),
+          children: [
+            { index: true, element: <Navigate to={path.profile} /> },
+            { path: path.profile, element: <Profile /> },
+            { path: path.changePassword, element: <ChangePassword /> },
+            { path: path.historyPurchase, element: <HistoryPurchase /> }
+          ]
         },
         {
           path: path.cart,
