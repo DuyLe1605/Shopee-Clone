@@ -8,11 +8,12 @@ import Input from '~/components/Input'
 import InputNumber from '~/components/InputNumber'
 import { profileSchema, ProfileSchema } from '~/utils/rules'
 import DateSelect from '../../components/DateSelect'
-import { Flip, toast } from 'react-toastify'
+import { Flip, toast, Zoom } from 'react-toastify'
 import { saveProfileToLS } from '~/utils/auth'
 import { AppContext } from '~/contexts/app.context'
 import { getAvatarUrl, isAxiosUnprocessableEntityError } from '~/utils/utils'
 import { ErrorResponseApi } from '~/types/utils.type'
+import config from '~/constants/config'
 
 type FormData = ProfileSchema
 
@@ -113,6 +114,26 @@ export default function Profile() {
   // Handle click file input
   const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const fileFromLocal = event.target.files?.[0]
+    // Validate file lớn hơn 1mb hoặc không phải img thì return
+    if (fileFromLocal && (fileFromLocal.size >= config.maxAvatarUploadSize || !fileFromLocal.type.includes('image'))) {
+      toast.error(
+        `Dụng lượng file tối đa 1 MB
+Định dạng:.JPEG, .PNG`,
+        {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: 'dark',
+          transition: Zoom
+        }
+      )
+      return
+    }
+
     setFile(fileFromLocal)
   }
 
@@ -204,7 +225,18 @@ export default function Profile() {
                 className='w-full h-full rounded-full object-cover'
               />
             </div>
-            <input className='hidden' type='file' accept='.jpg,.jpeg,.png' ref={fileInputRef} onChange={onFileChange} />
+            <input
+              className='hidden'
+              type='file'
+              accept='.jpg,.jpeg,.png'
+              ref={fileInputRef}
+              onChange={onFileChange}
+              onClick={(event) => {
+                // Để khi người dùng chọn 2 tấm ảnh giống nhau, nó vẫn hiển thị được lỗi
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                ;(event.target as any).value = null
+              }}
+            />
             <button
               className='flex h-10 items-center justify-end rounded-sm border-1 border-gray-300 bg-white px-6 text-sm text-gray-600 hover:shadow-sm hover:bg-gray-100 cursor-pointer'
               type='button'
