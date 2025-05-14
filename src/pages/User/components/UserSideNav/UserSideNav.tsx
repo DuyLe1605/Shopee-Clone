@@ -1,5 +1,6 @@
+import classNames from 'classnames'
 import { useContext } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import path from '~/constants/path'
 import { AppContext } from '~/contexts/app.context'
 
@@ -31,18 +32,42 @@ export default function UserSideNav() {
         </div>
       </div>
       <div className='mt-7'>
-        <Link to={path.profile} className='flex items-center mb-4'>
+        <NavLink
+          to={path.profile}
+          className={({ isActive }) =>
+            classNames('mt-4 flex items-center capitalize transition-colors', {
+              'text-orange-600': isActive,
+              'text-gray-600': !isActive
+            })
+          }
+        >
           <img src='https://down-vn.img.susercontent.com/file/ba61750a46794d8847c3f463c5e71cc4' className='w-5 h-5' />
           <div className='capitalize ml-2.5'>Tài khoản của tôi</div>
-        </Link>
-        <Link to={path.changePassword} className='flex items-center mb-4 '>
+        </NavLink>
+        <NavLink
+          to={path.changePassword}
+          className={({ isActive }) =>
+            classNames('mt-4 flex items-center capitalize transition-colors', {
+              'text-orange-600': isActive,
+              'text-gray-600': !isActive
+            })
+          }
+        >
           <img src='https://down-vn.img.susercontent.com/file/ba61750a46794d8847c3f463c5e71cc4' className='w-5 h-5' />
           <div className='capitalize ml-2.5'>Đổi mật khẩu</div>
-        </Link>
-        <Link to={path.historyPurchase} className='flex items-center '>
+        </NavLink>
+        <NavLink
+          to={path.historyPurchase}
+          className={({ isActive }) =>
+            classNames('mt-4 flex items-center capitalize transition-colors', {
+              'text-orange-600': isActive,
+              'text-gray-600': !isActive
+            })
+          }
+        >
           <img src='https://down-vn.img.susercontent.com/file/f0049e9df4e536bc3e7f140d071e9078' className='w-5 h-5' />
           <div className='capitalize ml-2.5'>Đơn mua</div>
-        </Link>
+        </NavLink>
       </div>
     </div>
   )
