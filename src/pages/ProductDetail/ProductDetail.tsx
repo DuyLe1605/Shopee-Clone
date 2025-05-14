@@ -6,7 +6,7 @@ import ProductRating from '../../components/ProductRating'
 import { calcDiscountPerCent, formatCurrency, formatNumberToSocialStyle, getIdFromNameId } from '~/utils/utils.ts'
 
 import DOMPurify from 'dompurify'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { Product as ProductType, ProductListConfig } from '../../types/product.type'
 import Product from '../ProductList/components/Product'
 import QuantityController from '~/components/QuantityController'
@@ -14,10 +14,12 @@ import purchaseApi from '~/apis/purchase.api'
 import { purchasesStatus } from '~/constants/purchase'
 import { Flip, toast } from 'react-toastify'
 import path from '~/constants/path'
+import { AppContext } from '~/contexts/app.context'
 
 export default function ProductDetail() {
   // Khi add sản phẩm thành công, ta sẽ bắt queryCLient cập nhật lại
   const queryClient = useQueryClient()
+  const { isAuthenticated } = useContext(AppContext)
   // Tạo state quản lí buy Count
   const [buyCount, setBuyCount] = useState<string | number>(1)
   const navigate = useNavigate()
@@ -105,38 +107,46 @@ export default function ProductDetail() {
   }
 
   const handleAddToCart = () => {
-    addToCartMutation.mutate(
-      { buy_count: buyCount as number, product_id: product?._id as string },
-      {
-        onSuccess() {
-          queryClient.invalidateQueries({ queryKey: ['purchases', { status: purchasesStatus.inCart }] }) // Khi invalidate thì ta truyền 1 object có queryKey tương ứng
-          toast.success('Thêm sản phẩm vào giỏ hàng thành công ', {
-            position: 'top-right',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: 'colored',
-            transition: Flip
-          })
+    if (!isAuthenticated) {
+      navigate({ pathname: path.login })
+    } else {
+      addToCartMutation.mutate(
+        { buy_count: buyCount as number, product_id: product?._id as string },
+        {
+          onSuccess() {
+            queryClient.invalidateQueries({ queryKey: ['purchases', { status: purchasesStatus.inCart }] }) // Khi invalidate thì ta truyền 1 object có queryKey tương ứng
+            toast.success('Thêm sản phẩm vào giỏ hàng thành công ', {
+              position: 'top-right',
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: false,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: 'colored',
+              transition: Flip
+            })
+          }
         }
-      }
-    )
+      )
+    }
   }
 
   // Buy Now
   const buyNow = () => {
-    addToCartMutation.mutate(
-      { buy_count: buyCount as number, product_id: product?._id as string },
-      {
-        onSuccess: (data) => {
-          const purchaseId = data.data.data._id
-          navigate({ pathname: path.cart }, { state: { purchaseId } })
+    if (!isAuthenticated) {
+      navigate({ pathname: path.login })
+    } else {
+      addToCartMutation.mutate(
+        { buy_count: buyCount as number, product_id: product?._id as string },
+        {
+          onSuccess: (data) => {
+            const purchaseId = data.data.data._id
+            navigate({ pathname: path.cart }, { state: { purchaseId } })
+          }
         }
-      }
-    )
+      )
+    }
   }
 
   // -------------------------------------RETURN--------------------------------------------
