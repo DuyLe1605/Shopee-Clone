@@ -2,6 +2,7 @@ import axios, { AxiosError, HttpStatusCode, type AxiosInstance } from 'axios'
 import { Bounce, toast } from 'react-toastify'
 import { clearLocalStorage, getAccessTokenFromLS, saveAccessTokenToLS, saveProfileToLS } from './auth'
 import { AuthResponse } from '../types/auth.type'
+import config from '~/constants/config'
 
 const notify = (message: string) =>
   toast.error(message, {
@@ -22,7 +23,7 @@ class Http {
     this.access_token = getAccessTokenFromLS()
 
     this.instance = axios.create({
-      baseURL: 'https://api-ecom.duthanhduoc.com/',
+      baseURL: config.baseURL,
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json'
@@ -58,14 +59,13 @@ class Http {
         return response
       },
       function (error: AxiosError) {
-        console.log(error)
         // nếu không phải lỗi 422 thì xử lí
         if (error.status !== HttpStatusCode.UnprocessableEntity) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const data: any | undefined = error.response?.data
 
           // Kiểm tra xem data có message không
-          const message = data.message || error.message
+          const message = data?.message || error.message
 
           notify(message)
         }

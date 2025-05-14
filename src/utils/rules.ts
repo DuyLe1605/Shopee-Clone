@@ -95,3 +95,23 @@ export type RegisterSchema = yup.InferType<typeof registerSchema>
 export type LoginSchema = yup.InferType<typeof loginSchema>
 export type PriceSchema = yup.InferType<typeof priceSchema>
 export type SearchSchema = yup.InferType<typeof searchSchema>
+
+// User Schema
+export const userSchema = yup.object({
+  name: yup.string().default('').max(160, 'Tên có độ dài tối đa là 160 kí tự'),
+  phone: yup.string().default('').max(20, 'Số điện thoại có độ dài tối đa là 20 kí tự'),
+  address: yup.string().default('').max(300, 'Độ dài địa chỉ đã đạt giới hạn 300 kí tự'),
+  date_of_birth: yup
+    .date()
+    .default(new Date(1990, 0, 1))
+    .max(new Date(), 'Ngày không hợp lệ! Hãy chọn 1 ngày trong quá khứ'),
+  avatar: yup.string().default('').max(1000, 'Độ dài đường dẫn avatar tối đa là 1000 kí tự'),
+  password: schema.fields['password'],
+  new_password: schema.fields['password'],
+  confirm_password: schema.fields['confirm_password']
+})
+
+export const profileSchema = userSchema.pick(['address', 'avatar', 'date_of_birth', 'name', 'phone'])
+
+export type UserSchema = yup.InferType<typeof userSchema>
+export type ProfileSchema = yup.InferType<typeof profileSchema>

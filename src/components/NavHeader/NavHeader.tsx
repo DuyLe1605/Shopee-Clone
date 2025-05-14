@@ -6,6 +6,7 @@ import { useContext } from 'react'
 import { AppContext } from '~/contexts/app.context'
 import authApi from '~/apis/auth.api'
 import { purchasesStatus } from '~/constants/purchase'
+import { getAvatarUrl } from '~/utils/utils'
 
 export default function NavHeader() {
   const queryClient = useQueryClient()
@@ -74,7 +75,7 @@ export default function NavHeader() {
             <>
               <div className='w-6 h-6 mr-2 flex-shrink-0'>
                 <img
-                  src='https://plus.unsplash.com/premium_photo-1673388695233-1e66ff1f17dc?q=80&w=1972&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+                  src={getAvatarUrl(profile?.avatar)}
                   alt='avatar'
                   className='w-full h-full object-cover rounded-full'
                 />

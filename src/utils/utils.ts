@@ -1,5 +1,7 @@
 import axios, { AxiosError, HttpStatusCode } from 'axios'
 
+import userImage from '~/assets/images/user.svg'
+
 // Trả về error có kiểu AxiosError<T>
 export const isAxiosErrorFunc = <T>(error: unknown): error is AxiosError<T> => {
   return axios.isAxiosError(error)
@@ -35,3 +37,5 @@ export const getIdFromNameId = (nameId: string) => {
   const arr = nameId.split('-i-')
   return arr[arr.length - 1]
 }
+
+export const getAvatarUrl = (avatarName?: string) => (avatarName ? avatarName : userImage)

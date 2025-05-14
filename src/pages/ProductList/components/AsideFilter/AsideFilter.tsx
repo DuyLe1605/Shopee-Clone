@@ -37,7 +37,6 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
   })
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data)
     navigate({
       pathname: path.home,
       search: createSearchParams(
@@ -160,6 +159,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
                   placeholder='₫ TỪ'
                   classNameInput='p-1 w-full border-gray-300 focus:border-gray-500 focus:shadow-sm rounded-sm outline-none border bg-white'
                   classNameError='hidden'
+                  {...field}
                   onChange={(event) => {
                     field.onChange(event)
                     trigger('price_max')
@@ -180,6 +180,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
                   placeholder='₫ ĐẾN'
                   classNameInput='p-1 w-full focus:border-gray-500 focus:shadow-sm rounded-sm outline-none border border-gray-300 bg-white'
                   classNameError='hidden'
+                  {...field}
                   onChange={(event) => {
                     field.onChange(event)
                     trigger('price_min')

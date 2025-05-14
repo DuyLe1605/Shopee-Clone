@@ -8,8 +8,8 @@ interface BodyUpdateProfile {
   address?: string
   date_of_birth?: string
   avatar?: string
-  password: string
-  new_password: string
+  password?: string
+  new_password?: string
 }
 
 const userApi = {

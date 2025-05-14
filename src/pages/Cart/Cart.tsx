@@ -79,7 +79,7 @@ export default function Cart() {
 
   const location = useLocation()
   const chosenPurchaseIdFromLocation = (location.state as { purchaseId: string } | null)?.purchaseId
-  console.log(extendedPurchases)
+
   useEffect(() => {
     // Hàm sẽ chạy khi mới vào và chạy lại khi purchasesInCart thay đổi, nó sẽ thêm các giá trị vào các Obj purchase
     setExtendedPurchases((prev) => {

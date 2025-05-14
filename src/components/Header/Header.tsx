@@ -26,7 +26,7 @@ export default function Header() {
 
   const purchasesInCart = purchasesInCartData?.data.data
   const totalPurchaseInCart = purchasesInCart?.length
-  console.log(totalPurchaseInCart)
+
   return (
     <div className='pb-5 pt-2 bg-[linear-gradient(-180deg,#f53d2d,#f63)] text-white '>
       <div className='custom-container'>
