@@ -1,12 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
 import classNames from 'classnames'
 import { createSearchParams, Link } from 'react-router-dom'
-import purchaseApi from 'src/apis/purchase.api'
-import path from 'src/constants/path'
-import { purchasesStatus } from 'src/constants/purchase'
-import useQueryParams from 'src/hooks/useQueryParams'
-import { PurchaseListStatus } from 'src/types/purchase.type'
-import { formatCurrency, generateNameId } from 'src/utils/utils'
+import purchaseApi from '~/apis/purchase.api'
+import path from '~/constants/path'
+import { purchasesStatus } from '~/constants/purchase'
+import useQueryParams from '~/hooks/useQueryParams'
+import { PurchaseListStatus } from '~/types/purchase.type'
+import { formatCurrency, generateNameId } from '~/utils/utils'
 
 const purchaseTabs = [
   { status: purchasesStatus.all, name: 'Tất cả' },
@@ -38,7 +38,7 @@ export default function HistoryPurchase() {
         }).toString()
       }}
       className={classNames('flex flex-1 items-center justify-center border-b-2 bg-white py-4 text-center', {
-        'border-b-orange text-orange': status === tab.status,
+        'border-b-orange-600 text-orange-600': status === tab.status,
         'border-b-black/10 text-gray-900': status !== tab.status
       })}
     >
@@ -69,13 +69,13 @@ export default function HistoryPurchase() {
                     <span className='truncate text-gray-500 line-through'>
                       ₫{formatCurrency(purchase.product.price_before_discount)}
                     </span>
-                    <span className='ml-2 truncate text-orange'>₫{formatCurrency(purchase.product.price)}</span>
+                    <span className='ml-2 truncate text-orange-600'>₫{formatCurrency(purchase.product.price)}</span>
                   </div>
                 </Link>
-                <div className='flex justify-end'>
+                <div className='flex w-[25%] ml-auto '>
                   <div>
                     <span>Tổng giá tiền</span>
-                    <span className='ml-4 text-xl text-orange'>
+                    <span className='ml-4 text-xl text-orange-600'>
                       ₫{formatCurrency(purchase.product.price * purchase.buy_count)}
                     </span>
                   </div>
