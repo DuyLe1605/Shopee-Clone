@@ -1,5 +1,5 @@
 import { InputHTMLAttributes, useEffect, useState } from 'react'
-import { RegisterOptions, useFormContext, UseFormRegister } from 'react-hook-form'
+import { RegisterOptions, UseFormRegister } from 'react-hook-form'
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
   errorMessage?: string
   rules?: RegisterOptions
@@ -8,6 +8,7 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
   classNameInput?: string
   classNameError?: string
   renderPasswordEye?: boolean
+  isSubmitSuccessful?: boolean
 }
 
 export default function Input({
@@ -19,12 +20,10 @@ export default function Input({
   classNameError = 'mt-1 text-red-600 text-sm min-h-[1.25rem]',
   classNameInput = 'p-3 w-full outline-none border border-gray-300 focus:border-gray-500 focus:shadow-sm rounded-sm',
   renderPasswordEye,
+  isSubmitSuccessful,
   ...rest
 }: Props) {
   const [eyeOpen, setEyeOpen] = useState<boolean>(false)
-  const {
-    formState: { isSubmitSuccessful }
-  } = useFormContext()
 
   const registerResult = register && name ? register(name, rules) : {}
 
