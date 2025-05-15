@@ -41,6 +41,14 @@ function testPriceMinMax(this: yup.TestContext<yup.AnyObject>) {
   return price_max !== '' || price_min !== ''
 }
 
+const handleConfirmPassword = (refString: string) => {
+  // hàm này sẽ trỏ đến field trong ref String để validate xem giống nhau không
+  return yup
+    .string()
+    .required('Vui lòng nhập lại Password')
+    .oneOf([yup.ref(refString)], 'Mật khẩu không khớp, vui lòng nhập lại !')
+}
+
 // Yup
 export const schema = yup
   .object({
@@ -57,10 +65,7 @@ export const schema = yup
       .min(6, 'Độ dài password nằm trong khoảng 5-160 kí tự')
       .max(160, 'Độ dài password nằm trong khoảng 5-160 kí tự'),
 
-    confirm_password: yup
-      .string()
-      .required('Vui lòng nhập lại Password')
-      .oneOf([yup.ref('password')], 'Mật khẩu không khớp, vui lòng nhập lại !'),
+    confirm_password: handleConfirmPassword('password'),
     price_min: yup.string().default('').test({
       name: 'price-not-allowed',
       message: 'Giá không phù hợp',
@@ -106,12 +111,14 @@ export const userSchema = yup.object({
     .default(new Date(1990, 0, 1))
     .max(new Date(), 'Ngày không hợp lệ! Hãy chọn 1 ngày trong quá khứ'),
   avatar: yup.string().default('').max(1000, 'Độ dài đường dẫn avatar tối đa là 1000 kí tự'),
-  password: schema.fields['password'],
-  new_password: schema.fields['password'],
-  confirm_password: schema.fields['confirm_password']
+  password: schema.fields['password'] as yup.StringSchema<string | undefined, yup.AnyObject, '', 'd'>,
+  new_password: schema.fields['password'] as yup.StringSchema<string | undefined, yup.AnyObject, '', 'd'>,
+  confirm_password: handleConfirmPassword('new_password')
 })
 
 export const profileSchema = userSchema.pick(['address', 'avatar', 'date_of_birth', 'name', 'phone'])
+export const passwordSchema = userSchema.pick(['password', 'new_password', 'confirm_password'])
 
 export type UserSchema = yup.InferType<typeof userSchema>
 export type ProfileSchema = yup.InferType<typeof profileSchema>
+export type PasswordSchema = yup.InferType<typeof passwordSchema>
