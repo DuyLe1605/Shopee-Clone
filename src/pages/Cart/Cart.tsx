@@ -162,7 +162,7 @@ export default function Cart() {
   }
 
   // không có sản phẩm trong giỏ
-  if (purchasesInCart?.length === 0) {
+  if (_.isEmpty(purchasesInCart)) {
     return (
       <div className='py-45 bg-neutral-100 border-b-3 border-orange-600 '>
         <div className='custom-container '>
