@@ -24,6 +24,7 @@ export default function ProductDetail() {
   const [buyCount, setBuyCount] = useState<string | number>(1)
   const navigate = useNavigate()
   const { nameId } = useParams()
+
   const id = getIdFromNameId(nameId as string)
 
   const { data: productDetailData } = useQuery({

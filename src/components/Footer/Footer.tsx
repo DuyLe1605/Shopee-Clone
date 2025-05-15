@@ -1,10 +1,11 @@
 export default function Footer() {
+  const year = new Date().getFullYear()
   return (
     <footer className='py-16 bg-neutral-100'>
       <div className='custom-container'>
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-4'>
           <div className='lg:col-span-1'>
-            <p>© 2025 Shopee. Tất cả các quyền được bảo lưu.</p>
+            <p>© {year} Shopee. Tất cả các quyền được bảo lưu.</p>
           </div>
           <div className='lg:col-span-2'>
             <p>
