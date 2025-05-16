@@ -10,6 +10,13 @@ export const saveAccessTokenToLS = (access_token: string) => {
 
 export const getAccessTokenFromLS = () => localStorage.getItem('access_token') || ''
 
+// Refresh Token
+export const saveRefreshTokenToLS = (refresh_token: string) => {
+  localStorage.setItem('refresh_token', refresh_token)
+}
+
+export const getRefreshTokenFromLS = () => localStorage.getItem('refresh_token') || ''
+
 // Profile
 export const saveProfileToLS = (profile: User) => {
   const profileString = JSON.stringify(profile)
@@ -23,6 +30,7 @@ export const getProfileFromLS = () => {
 
 export const clearLocalStorage = () => {
   localStorage.removeItem('access_token')
+  localStorage.removeItem('refresh_token')
   localStorage.removeItem('profile')
 
   // Tạo một sự kiện mới với tên 'clearLS'
