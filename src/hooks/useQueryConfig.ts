@@ -1,4 +1,5 @@
-import _ from 'lodash'
+import omitBy from 'lodash/omitBy'
+import isUndefined from 'lodash/isUndefined'
 import { ProductListConfig } from '../types/product.type'
 import useQueryParams from './useQueryParams'
 
@@ -9,7 +10,7 @@ export type QueryParams = {
 export default function useQueryConfig() {
   const queryParams: QueryParams = useQueryParams()
   // Làm như vậy để lọc ra những param thuộc ProductListConfig, loại bỏ những trường undefined
-  const queryConfig: QueryParams = _.omitBy(
+  const queryConfig: QueryParams = omitBy(
     {
       page: queryParams.page || '1',
       limit: queryParams.limit || '10',
@@ -22,7 +23,7 @@ export default function useQueryConfig() {
       price_min: queryParams.price_min,
       name: queryParams.name
     },
-    _.isUndefined
+    isUndefined
   )
   return queryConfig
 }

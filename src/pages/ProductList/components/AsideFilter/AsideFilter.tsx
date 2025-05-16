@@ -4,7 +4,8 @@ import Button from '../../../../components/Button'
 
 import { Category } from '../../../../types/category.type'
 import classNames from 'classnames'
-import _ from 'lodash'
+import omitBy from 'lodash/omitBy'
+import omit from 'lodash/omit'
 import InputNumber from '../../../../components/InputNumber'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -40,7 +41,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
     navigate({
       pathname: path.home,
       search: createSearchParams(
-        _.omitBy(
+        omitBy(
           {
             ...queryConfig,
             price_max: data.price_max,
@@ -56,7 +57,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
     navigate({
       pathname: path.home,
       search: createSearchParams(
-        _.omit({ ...queryConfig }, ['price_min', 'price_max', 'rating_filter', 'category'])
+        omit({ ...queryConfig }, ['price_min', 'price_max', 'rating_filter', 'category'])
       ).toString()
     })
   }
@@ -69,7 +70,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
           to={{
             pathname: path.home,
             search: createSearchParams(
-              _.omit(
+              omit(
                 {
                   ...queryConfig,
                   page: '1'

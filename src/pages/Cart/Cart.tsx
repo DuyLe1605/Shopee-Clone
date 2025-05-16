@@ -11,7 +11,8 @@ import { Purchase } from '~/types/purchase.type'
 import { formatCurrency, generateNameId } from '~/utils/utils'
 import { produce } from 'immer'
 
-import _ from 'lodash'
+import keyBy from 'lodash/keyBy'
+import isEmpty from 'lodash/isEmpty'
 import { Flip, toast } from 'react-toastify'
 import classNames from 'classnames'
 import { AppContext } from '~/contexts/app.context'
@@ -85,7 +86,7 @@ export default function Cart() {
     setExtendedPurchases((prev) => {
       // Vì chúng ta cần xem trước khi fetch lại api, purchase đó đã check hay chưa.
       // Mà purchasesInCart không có thuộc tính checked, nên ta phải dùng hàm keyBy để tạo 1 object có key là _id, từ đó truy cập Object mới thông qua id của prev
-      const extendedPurchasesObject = _.keyBy(prev, '_id')
+      const extendedPurchasesObject = keyBy(prev, '_id')
       return (
         purchasesInCart?.map((purchase) => {
           const isChosenPurchaseIdFromLocation = chosenPurchaseIdFromLocation === purchase._id
@@ -162,7 +163,7 @@ export default function Cart() {
   }
 
   // không có sản phẩm trong giỏ
-  if (_.isEmpty(purchasesInCart)) {
+  if (isEmpty(purchasesInCart)) {
     return (
       <div className='py-45 bg-neutral-100 border-b-3 border-orange-600 '>
         <div className='custom-container '>

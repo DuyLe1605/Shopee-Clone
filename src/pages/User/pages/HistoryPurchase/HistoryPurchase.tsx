@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import classNames from 'classnames'
-import _ from 'lodash'
+import isEmpty from 'lodash/isEmpty'
 import { createSearchParams, Link } from 'react-router-dom'
 import purchaseApi from '~/apis/purchase.api'
 import path from '~/constants/path'
@@ -57,7 +57,7 @@ export default function HistoryPurchase() {
           {isSuccess && (
             <div>
               {/* Không có sản phẩm */}
-              {_.isEmpty(purchasesInCart) && (
+              {isEmpty(purchasesInCart) && (
                 <div className='py-45 bg-neutral-100 border-b-3 border-orange-600 '>
                   <div className='custom-container '>
                     <div className='flex flex-col justify-center items-center '>
@@ -79,7 +79,7 @@ export default function HistoryPurchase() {
               )}
 
               {/* Có sản phẩm */}
-              {!_.isEmpty(purchasesInCart) &&
+              {!isEmpty(purchasesInCart) &&
                 purchasesInCart?.map((purchase) => (
                   <div
                     key={purchase._id}
