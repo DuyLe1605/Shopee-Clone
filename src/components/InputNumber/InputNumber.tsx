@@ -14,7 +14,7 @@ export default function InputNumber({
   onChange,
   classNameError = 'mt-1 text-red-600 text-sm min-h-[1.25rem]',
   classNameInput = 'p-3 w-full outline-none border border-gray-300 focus:border-gray-500 focus:shadow-sm rounded-sm',
-  value = '',
+  value,
   ...rest
 }: InputNumberProps) {
   const [localValue, setLocalValue] = useState<string>(value as string)
@@ -41,7 +41,7 @@ export default function InputNumber({
         className={classNameInput}
         {...rest}
         onChange={handleChange}
-        value={value || localValue}
+        value={value && localValue}
         ref={ref}
       />
       <div className={classNameError}>{errorMessage}</div>

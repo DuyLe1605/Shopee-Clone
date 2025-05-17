@@ -40,9 +40,9 @@ class Http {
       baseURL: config.baseURL,
       timeout: 10000,
       headers: {
-        'Content-Type': 'application/json',
-        'expire-access-token': 5, //10s
-        'expire-refresh-token': 60 * 60 // 1 hour
+        'Content-Type': 'application/json'
+        // 'expire-access-token': 5, //10s
+        // 'expire-refresh-token': 60 * 60 // 1 hour
       }
     })
 
