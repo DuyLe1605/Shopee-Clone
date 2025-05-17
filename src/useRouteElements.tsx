@@ -31,22 +31,25 @@ function RejectedRoute() {
 export default function useRouteElements() {
   //
   return useRoutes([
+    // Protected Route
     {
       path: '',
       element: <ProtectedRoute />,
       children: [
         {
           path: path.user,
-          element: (
-            <MainLayout>
-              <UserLayout />
-            </MainLayout>
-          ),
+          element: <MainLayout />,
           children: [
-            { index: true, element: <Navigate to={path.profile} /> },
-            { path: path.profile, element: <Profile /> },
-            { path: path.changePassword, element: <ChangePassword /> },
-            { path: path.historyPurchase, element: <HistoryPurchase /> }
+            {
+              path: '',
+              element: <UserLayout />,
+              children: [
+                { index: true, element: <Navigate to={path.profile} /> },
+                { path: path.profile, element: <Profile /> },
+                { path: path.changePassword, element: <ChangePassword /> },
+                { path: path.historyPurchase, element: <HistoryPurchase /> }
+              ]
+            }
           ]
         },
         {
@@ -59,52 +62,46 @@ export default function useRouteElements() {
         }
       ]
     },
+    // Rejected Route
     {
       path: '',
       element: <RejectedRoute />,
       children: [
         {
-          path: path.login,
-          element: (
-            <RegisterLayout>
-              <Login />
-            </RegisterLayout>
-          )
-        },
-        {
-          path: path.register,
-          element: (
-            <RegisterLayout>
-              <Register />
-            </RegisterLayout>
-          )
+          path: '',
+          element: <RegisterLayout />,
+          children: [
+            {
+              path: path.login,
+              element: <Login />
+            },
+            {
+              path: path.register,
+              element: <Register />
+            }
+          ]
         }
       ]
     },
+    //
     {
-      path: path.productDetail,
-      element: (
-        <MainLayout>
-          <ProductDetail />
-        </MainLayout>
-      )
-    },
-    {
-      path: '/',
-      index: true,
-      element: (
-        <MainLayout>
-          <ProductList />
-        </MainLayout>
-      )
-    },
-    {
-      path: '*',
-      element: (
-        <MainLayout>
-          <NotFound />
-        </MainLayout>
-      )
+      path: '',
+      element: <MainLayout />,
+      children: [
+        {
+          path: path.productDetail,
+          element: <ProductDetail />
+        },
+        {
+          path: '/',
+          index: true,
+          element: <ProductList />
+        },
+        {
+          path: '*',
+          element: <NotFound />
+        }
+      ]
     }
   ])
 }
