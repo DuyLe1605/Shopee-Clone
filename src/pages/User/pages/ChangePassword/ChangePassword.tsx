@@ -78,7 +78,7 @@ export default function ChangePassword() {
               <Input
                 classNameInput=' w-full rounded-sm border border-gray-300 pl-3 pr-10 py-2 outline-none focus:border-gray-500 focus:shadow-sm'
                 className='relative'
-                placeholder='Tên'
+                placeholder='Mật khẩu cũ...'
                 register={register}
                 name='password'
                 type='password'
@@ -94,7 +94,7 @@ export default function ChangePassword() {
               <Input
                 classNameInput=' w-full rounded-sm border border-gray-300 pl-3 pr-10 py-2 outline-none focus:border-gray-500 focus:shadow-sm'
                 className='relative'
-                placeholder='Tên'
+                placeholder='Mật khẩu mới...'
                 register={register}
                 name='new_password'
                 type='password'
@@ -110,7 +110,7 @@ export default function ChangePassword() {
               <Input
                 classNameInput=' w-full rounded-sm border border-gray-300 pl-3 pr-10 py-2 outline-none focus:border-gray-500 focus:shadow-sm'
                 className='relative'
-                placeholder='Tên'
+                placeholder='Nhập lại mật khẩu...'
                 register={register}
                 name='confirm_password'
                 type='password'

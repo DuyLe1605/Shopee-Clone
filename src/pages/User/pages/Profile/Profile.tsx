@@ -52,7 +52,7 @@ export default function Profile() {
 
   const profile = profileData?.data.data
   // Avatar watch trong form
-  const avatar = watch('avatar')
+  const avatar = watch('avatar').endsWith('undefined') ? undefined : watch('avatar')
 
   useEffect(() => {
     // Hàm này sẽ có tác dụng là khi profile có data, nó sẽ hiển thị lên form
